@@ -17,7 +17,7 @@ local lastTime = nil
 
 local pawnList = {}
 
-local boostList = Boost
+local boostList = Boost.boostList
 local selectedBoost = nil
 local boostSelectionMenu = nil
 
@@ -27,14 +27,17 @@ function love.load()
   math.randomseed(os.time())
   if arg[#arg] == "-debug" then require("mobdebug").start() end -- Enables debugging in ZeroBrane
   
+  Boost.BoostLoad()
+
   table.insert(pawnList, Pawn:new({position = vector(230, 200), isActive = true, isInside = true}))
   table.insert(pawnList, Pawn:new({position = vector(400, 300), isActive = true, isInside = true}))
   enthusiasmMeter = EnthusiasmMeter:new()
   moneyMeter = MoneyMeter:new()
   boostSelectionMenu = BoostSelectionMenu:new()
+  
 
-  Boost[1].isSelected = true
-  selectedBoost = Boost[1]
+  boostList[1].isSelected = true
+  selectedBoost = boostList[1]
   regularFont = love.graphics.getFont()
   bigFont = love.graphics.newFont(Constants.bigFontSize)
 end

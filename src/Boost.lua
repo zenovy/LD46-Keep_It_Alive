@@ -16,6 +16,7 @@ Boost = {
   timeSincePlaced = 0,
   color = DEFAULT_COLOR,
   boostEnthusiasmRate = Constants.defaultBoostEnthusiasmRate,
+  balloons = {},
 }
 local boostRef = Boost
 
@@ -25,6 +26,14 @@ function Boost:new(o)
   self.__index = self
   o.position = vector:new()
   return o
+end
+
+function BoostLoad()
+  local balloonRed = love.graphics.newImage('balloon-red.png')
+  local balloonBlue = love.graphics.newImage('balloon-blue.png')
+  local balloonGreen = love.graphics.newImage('balloon-green.png')
+  local balloons = {balloonRed, balloonBlue, balloonGreen}
+  Boost.balloonSprites = balloons
 end
 
 function Boost:update(dt, pawnList, mousePosX, mousePosY)
@@ -106,10 +115,10 @@ function Boost:place(moneyMeter)
     self.hasBeenPlaced = true
 
     -- TODO move into BalloonBoost derived method
-    self.balloons = {}
     local balloonBrightnessFactor = 0.5
-    for i = 1, NUM_BALLOONS do
-      local spacingFactor = i / NUM_BALLOONS -- keeps an even distribution
+    for i = 1, #Boost.balloonSprites do
+      local balloonImage = Boost.balloonSprites[i]
+      local spacingFactor = i / #Boost.balloonSprites -- keeps an even distribution
       local distanceFromCenter = self.radius * spacingFactor
       local degreeFromZero = (2 * math.pi) * spacingFactor
       local x = self.position.x + math.cos(degreeFromZero) * distanceFromCenter
@@ -119,7 +128,7 @@ function Boost:place(moneyMeter)
         math.random() * (1 - balloonBrightnessFactor) + balloonBrightnessFactor,
         math.random() * (1 - balloonBrightnessFactor) + balloonBrightnessFactor,
       }
-      table.insert(self.balloons, {x = x, y = y, dy = 0, floatRate = math.random() * 0.1, color = color})
+      table.insert(self.balloons, {image = balloonImage, x = x, y = y, dy = 0, floatRate = math.random() * 0.1, color = color})
     end
   elseif moneyMeter.amount < self.cost then
     self.showNotEnough = true
@@ -155,7 +164,8 @@ function BalloonBoost:draw(money, mousePosX, mousePosY)
   boostRef.draw(self, money, mousePosX, mousePosY) -- for some reason can't just call Boost.draw(self)
   if self.hasBeenPlaced then
     for _, balloon in pairs(self.balloons) do
-      PrimitiveGraphics.drawBalloon(balloon.x, balloon.y, BALLOON_RADIUS, balloon.color)
+      love.graphics.setColor(1, 1, 1)
+      love.graphics.draw(balloon.image, balloon.x, balloon.y)
       balloon.dy = balloon.dy - 0.1 * balloon.floatRate
       balloon.y = balloon.y + balloon.dy
       balloon.floatRate = balloon.floatRate + math.random() * 0.1
@@ -164,7 +174,10 @@ function BalloonBoost:draw(money, mousePosX, mousePosY)
 end
 
 return {
-  FriendBoost,
-  PizzaBoost,
-  BalloonBoost,
+  BoostLoad = BoostLoad,
+  boostList = {
+    FriendBoost,
+    PizzaBoost,
+    BalloonBoost,
+  }
 }
