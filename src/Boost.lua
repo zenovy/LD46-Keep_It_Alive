@@ -1,8 +1,9 @@
 
 local defaultRadius = 100
 local defaultLifetime = 2 -- seconds
+local defaultCost = 20
 
-Boost = {radius = defaultRadius, timeSincePlaced = 0, lifetime = defaultLifetime}
+Boost = {radius = defaultRadius, timeSincePlaced = 0, lifetime = defaultLifetime, cost = defaultCost}
 function Boost:new(o)
   o = o or {}
   setmetatable(o, self)

@@ -22,6 +22,8 @@ local moveDist = 10
 
 local lose = false
 
+local CASH_PER_NEW_PAWN = 10
+
 local bounds = {100, 100, 500, 500}
 
 function clampToBounds(x, y, xBoundLow, yBoundLow, xBoundHigh, yBoundHigh)
@@ -73,10 +75,9 @@ function love.update(dt)
     -- Insert a new pawn (chance based on enthusiasm)
     local rand = math.random()
     if rand < enthusiasmMeter.percentFilled then
-      local x = math.random() * 300
-      local y = math.random() * 300
       local x, y = math.random(bounds[1], bounds[3]), math.random(bounds[2], bounds[4])
       table.insert(pawnList, Pawn:new({position = vector(x, y)}))
+      moneyMeter.amount = moneyMeter.amount + CASH_PER_NEW_PAWN
     end
 
     -- Shuffle pawns around
@@ -143,7 +144,8 @@ function love.draw()
 end
 
 function love.mousepressed(x, y, button)
-  if button == 1 and selectedBoost then
+  if not lose and button == 1 and selectedBoost and moneyMeter.amount > selectedBoost.cost then
+    moneyMeter.amount = moneyMeter.amount - selectedBoost.cost
     table.insert(placedBoostList, selectedBoost)
     selectedBoost = nil
     -- TODO remove below line - just for testing
