@@ -19,8 +19,8 @@ local moveDist = 10
 function love.load()
   if arg[#arg] == "-debug" then require("mobdebug").start() end -- Enables debugging in ZeroBrane
   
-  table.insert(pawnList, Pawn:new({position = vector(50, 50)}))
-  table.insert(pawnList, Pawn:new({position = vector(25, 25)}))
+  table.insert(pawnList, Pawn:new({position = vector(230, 200)}))
+  table.insert(pawnList, Pawn:new({position = vector(400, 300)}))
   enthusiasmMeter = EnthusiasmMeter:new()
 
 end
@@ -35,14 +35,20 @@ function love.update(dt)
   enthusiasmMeter.percentFilled = enthusiasmSum
   mousePosition.x, mousePosition.y = love.mouse.getPosition()
   fps = math.ceil(1 / dt)
+
   if not lastTime then lastTime = love.timer.getTime() end
+  
+  -- TODO: These events are jittery (at most 1/sec), should feel more fluid, also should decouple pawn shuffling w/ new pawns
   if (love.timer.getTime() - lastTime) > 1 then
+    -- Insert a new pawn (chance based on enthusiasm)
     local rand = math.random()
     if rand < enthusiasmMeter.percentFilled then
       local x = math.random() * 300
       local y = math.random() * 300
       table.insert(pawnList, Pawn:new({position = vector(x, y)}))
     end
+
+    -- Shuffle pawns around
     for _, pawn in pairs(pawnList) do
       local rand = math.random()
       if rand < moveChance then
@@ -52,8 +58,6 @@ function love.update(dt)
         pawn.position = pawn.position + moveVec:normalized() * moveDist
       end
     end
-    
-    
     lastTime = nil
   end
 end
