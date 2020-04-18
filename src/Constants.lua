@@ -2,8 +2,8 @@ Constants ={
   -- Balancing Constants
   cashPerNewPawn = 10,
   newPawnFactor = 0.5,
-  initialEnthusiasm = 1,
-  enthusiasmDecay = 0.1,
+  initialEnthusiasm = 0.75,
+  enthusiasmDecay = 0.01,
   defaultBoostCost = 20,
   defaultBoostRadius = 80,
   defaultBoostEnthusiasmRate = 1,

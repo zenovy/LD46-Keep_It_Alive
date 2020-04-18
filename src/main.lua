@@ -4,6 +4,7 @@ Pawn = require "Pawn"
 Boost = require "Boost"
 EnthusiasmMeter = require "EnthusiasmMeter"
 MoneyMeter = require "MoneyMeter"
+BoostSelectionMenu = require "BoostSelectionMenu"
 
 Constants = require "Constants"
 UtilFuncs = require "UtilFuncs"
@@ -20,6 +21,7 @@ local boostList = {}
 local selectedBoost = nil
 local selectedBoostType = nil
 local placedBoostList = {}
+local boostSelectionMenu = nil
 
 local lose = false
 
@@ -31,6 +33,7 @@ function love.load()
   table.insert(pawnList, Pawn:new({position = vector(400, 300), isActive = true}))
   enthusiasmMeter = EnthusiasmMeter:new()
   moneyMeter = MoneyMeter:new()
+  boostSelectionMenu = BoostSelectionMenu:new()
 
   -- TODO: When picking boosts is implemented, this won't initialize here
   selectedBoost = Boost.FriendBoost:new()
@@ -97,14 +100,8 @@ function love.draw()
   -- Draw Constants.room
   love.graphics.setColor(0.4, 0, 0)
   love.graphics.rectangle('fill', Constants.room[1], Constants.room[2], Constants.room[3] - Constants.room[1], Constants.room[4] - Constants.room[2])
-  for _, pawn in pairs(pawnList) do
-    pawn:draw()
-  end
   
-  for _, pawn in pairs(pawnList) do
-    pawn:drawEnthusiasmBar()
-  end
-
+  -- Draw Boost under cursor
   if selectedBoost then
     selectedBoost:draw()
   end
@@ -113,15 +110,30 @@ function love.draw()
     boost:draw()
   end
   
+  -- Draw Pawns
+  for _, pawn in pairs(pawnList) do
+    pawn:draw()
+  end
+  
+  -- Draw Pawns' Enthusiasm Bars
+  for _, pawn in pairs(pawnList) do
+    pawn:drawEnthusiasmBar()
+  end
+
+  
+  -- Draw UI
   enthusiasmMeter:draw()
   moneyMeter:draw()
+  boostSelectionMenu:draw()
   
+  -- Draw Lose UI
   if lose then
     love.graphics.setFont(bigFont)
     love.graphics.print("YOU LOSE!", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
     love.graphics.setFont(regularFont)
   end
 
+  -- Draw Debug UI
   if debugMode then
     love.graphics.print('FPS: ' .. tostring(fps))
   end

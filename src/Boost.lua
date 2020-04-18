@@ -13,6 +13,7 @@ Boost = {
   timeSincePlaced = 0,
   color = DEFAULT_COLOR,
 }
+local originalBoost = Boost
 
 function Boost:new(o)
   o = o or {}
@@ -39,20 +40,14 @@ function Boost:update(dt, pawnList)
 end
 
 function Boost:draw()
-  -- TODO make them glow/pulse if they're placed - use sin(x) function iterator-type thing
-  love.graphics.setColor(self.color[1], self.color[2], self.color[3], 0.5)
-  love.graphics.circle('fill', self.position.x, self.position.y, self.radius)
-  if self.hasEffect then
-    for _, balloon in pairs(self.balloons) do
-      love.graphics.setColor(1, 1, 1)
-      love.graphics.line(balloon.x, balloon.y, balloon.x, balloon.y + BALLOON_RADIUS * 5)
-      love.graphics.setColor(unpack(balloon.color))
-      love.graphics.circle('fill', balloon.x, balloon.y, BALLOON_RADIUS)
-      balloon.dy = balloon.dy - 0.1 * balloon.floatRate
-      balloon.y = balloon.y + balloon.dy
-      balloon.floatRate = balloon.floatRate + math.random() * 0.1
-    end
+  if self.timeSincePlaced > 0 then
+    local pulseFactor = math.sin(self.timeSincePlaced * 10) * 0.2
+    love.graphics.setColor(self.color[1] + pulseFactor, self.color[2] + pulseFactor, self.color[3] + pulseFactor, 0.5)
+  else
+    love.graphics.setColor(self.color[1], self.color[2], self.color[3], 0.8)
   end
+  
+  love.graphics.circle('fill', self.position.x, self.position.y, self.radius)
 end
 
 function Boost:toggleEffect()
@@ -67,8 +62,26 @@ function Boost:toggleEffect()
   self.hasEffect = true
 end
 
-local BalloonBoost = Boost:new()
-local FriendBoost = Boost:new({radius = 40, color = {0, 1, 0}, cost = 5})
+
+local FriendBoost = Boost:new({radius = 40, color = {0, 1, 0}, cost = 5, lifetime = 2})
+local BalloonBoost = Boost:new({lifetime = 6})
+local PizzaBoost = Boost:new({radius = 40, color = {0, 1, 0}, cost = 5, lifetime = 2})
+
+function BalloonBoost:draw()
+  originalBoost.draw(self) -- for some reason can't just call Boost.draw(self)
+  if self.hasEffect then
+    for _, balloon in pairs(self.balloons) do
+      love.graphics.setColor(1, 1, 1)
+      love.graphics.setLineWidth(1)
+      love.graphics.line(balloon.x, balloon.y, balloon.x, balloon.y + BALLOON_RADIUS * 5)
+      love.graphics.setColor(unpack(balloon.color))
+      love.graphics.circle('fill', balloon.x, balloon.y, BALLOON_RADIUS)
+      balloon.dy = balloon.dy - 0.1 * balloon.floatRate
+      balloon.y = balloon.y + balloon.dy
+      balloon.floatRate = balloon.floatRate + math.random() * 0.1
+    end
+  end
+end
 
 return {
   BalloonBoost = BalloonBoost,
