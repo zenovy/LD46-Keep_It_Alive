@@ -16,6 +16,7 @@ function Pawn:draw()
   love.graphics.setColor(1, 1, 1)
   love.graphics.circle('fill', self.position.x, self.position.y, self.size)
   love.graphics.setColor(0, 0, 0)
+  love.graphics.setLineWidth(2)
   love.graphics.circle('line', self.position.x, self.position.y, self.size)
 end
 
