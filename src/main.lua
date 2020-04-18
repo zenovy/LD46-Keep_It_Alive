@@ -36,10 +36,15 @@ function love.update(dt)
   end
   local enthusiasmSum = 0
   for _, pawn in pairs(pawnList) do
+    pawn:update(dt) -- not relevant to rest of what's going on here but no nee
     enthusiasmSum = enthusiasmSum + pawn.enthusiasm
   end
   enthusiasmSum = enthusiasmSum / #pawnList
   
+  for _, pawn in pairs(pawnList) do
+    pawn:update(dt)
+  end
+
   enthusiasmMeter.percentFilled = enthusiasmSum
   fps = math.ceil(1 / dt)
 

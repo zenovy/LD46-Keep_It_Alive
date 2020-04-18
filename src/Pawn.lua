@@ -2,6 +2,7 @@ vector = require "lib/vector"
 
 local baseSize = 12
 local barHeadPadding = 5
+local decayPerSecond = 0.01
 
 Pawn = {position = vector(15, 15), size = baseSize, enthusiasm = 0.5}
 function Pawn:new(o)
@@ -9,6 +10,10 @@ function Pawn:new(o)
   setmetatable(o, self)
   self.__index = self
   return o
+end
+
+function Pawn:update(dt)
+  self.enthusiasm = self.enthusiasm - decayPerSecond * dt
 end
 
 function Pawn:draw()
