@@ -27,6 +27,11 @@ function Boost:new(o)
 end
 
 function Boost:update(dt, pawnList, mousePosX, mousePosY)
+  if not self.isSelected then
+    self.showNotEnough = false
+    self.timeSinceShownNotEnough = 0
+  end
+
   if not self.isSelected and not self.hasBeenPlaced then return end
 
   if self.isSelected and not self.hasBeenPlaced then
@@ -47,7 +52,7 @@ function Boost:update(dt, pawnList, mousePosX, mousePosY)
     self.hasBeenPlaced = false
     self.timeSincePlaced = 0
   end
-  
+
   if self.showNotEnough then
     self.timeSinceShownNotEnough = self.timeSinceShownNotEnough + dt
     if self.timeSinceShownNotEnough > TIME_TO_SHOW_NOT_ENOUGH then
