@@ -13,6 +13,9 @@ local lastTime = nil
 
 local pawnList = {}
 
+local moveChance = 0.2
+local moveDist = 10
+
 function love.load()
   if arg[#arg] == "-debug" then require("mobdebug").start() end -- Enables debugging in ZeroBrane
   
@@ -40,6 +43,16 @@ function love.update(dt)
       local y = math.random() * 300
       table.insert(pawnList, Pawn:new({position = vector(x, y)}))
     end
+    for _, pawn in pairs(pawnList) do
+      local rand = math.random()
+      if rand < moveChance then
+        -- base direction off same random; don't bias due to condition
+        local direction = rand / moveChance * 2 * math.pi
+        local moveVec = vector(math.sin(direction), math.cos(direction))
+        pawn.position = pawn.position + moveVec:normalized() * moveDist
+      end
+    end
+    
     
     lastTime = nil
   end
