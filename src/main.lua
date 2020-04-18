@@ -46,6 +46,11 @@ function love.update(dt)
 end
 
 function love.draw()
+  local mousePositionX, mousePositionY = love.mouse.getPosition()
+
+  love.graphics.setColor(1, 1, 1, 0.5)
+  love.graphics.circle('fill', mousePositionX, mousePositionY, 50)
+
   for _, pawn in pairs(pawnList) do
     pawn:draw()
   end
@@ -55,3 +60,19 @@ function love.draw()
     love.graphics.print('FPS: ' .. tostring(fps))
   end
 end
+
+function love.mousepressed(x, y, button)
+  if button == 1 then
+    for _, pawn in pairs(pawnList) do
+      -- TODO this will need some polishing to get the distance from 'middle' of pawn right
+      local pawnX = pawn.position.x
+      local pawnY = pawn.position.y
+      if math.sqrt((pawnX - x) ^ 2 + (pawnY - y) ^ 2) < 50 then
+        pawn.enthusiasm = 1
+      end
+    end
+    
+  end
+  
+end
+
