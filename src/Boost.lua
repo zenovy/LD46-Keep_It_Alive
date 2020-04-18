@@ -58,6 +58,7 @@ function Boost:draw(mousePosX, mousePosY)
   end
 
   if self.timeSincePlaced > 0 then
+    -- Pulse the placed boosts
     local pulseFactor = math.sin(self.timeSincePlaced * 10) * 0.2
     love.graphics.setColor(self.color[1] + pulseFactor, self.color[2] + pulseFactor, self.color[3] + pulseFactor, 0.5)
   else
@@ -65,6 +66,13 @@ function Boost:draw(mousePosX, mousePosY)
   end
   
   love.graphics.circle('fill', self.position.x, self.position.y, self.radius)
+
+    -- Show how much it cost
+    if self.timeSincePlaced > 0 and self.timeSincePlaced < 1 and self.cost > 0 then
+      love.graphics.setColor(1, 0, 0)
+      love.graphics.print('-$' .. tostring(self.cost), self.position.x + self.radius / 3, self.position.y - self.radius / 3)
+    end
+
 end
 
 function Boost:place()

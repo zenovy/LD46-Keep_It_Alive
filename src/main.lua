@@ -27,8 +27,8 @@ function love.load()
   math.randomseed(os.time())
   if arg[#arg] == "-debug" then require("mobdebug").start() end -- Enables debugging in ZeroBrane
   
-  table.insert(pawnList, Pawn:new({position = vector(230, 200), isActive = true}))
-  table.insert(pawnList, Pawn:new({position = vector(400, 300), isActive = true}))
+  table.insert(pawnList, Pawn:new({position = vector(230, 200), isActive = true, isInside = true}))
+  table.insert(pawnList, Pawn:new({position = vector(400, 300), isActive = true, isInside = true}))
   enthusiasmMeter = EnthusiasmMeter:new()
   moneyMeter = MoneyMeter:new()
   boostSelectionMenu = BoostSelectionMenu:new()

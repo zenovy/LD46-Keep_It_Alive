@@ -6,7 +6,13 @@ UtilFuncs = require "UtilFuncs"
 local PAWN_SPAWN = vector(300, 550)
 local DOOR = vector(300, 500)
 
-Pawn = {position = PAWN_SPAWN:clone(), size = Constants.basePawnSize, enthusiasm = Constants.initialEnthusiasm, isActive = false, isInside = false}
+Pawn = {
+  position = PAWN_SPAWN:clone(),
+  size = Constants.basePawnSize,
+  enthusiasm = Constants.initialEnthusiasm,
+  isActive = false,
+  isInside = false,
+}
 function Pawn:new(o)
   o = o or {}
   setmetatable(o, self)
@@ -53,6 +59,11 @@ function Pawn:draw()
   love.graphics.setColor(0, 0, 0)
   love.graphics.setLineWidth(2)
   love.graphics.circle('line', self.position.x, self.position.y, self.size)
+  
+  if not self.isInside then
+    love.graphics.setColor(0, 1, 0, 0.8)
+    love.graphics.print("+$10", self.position.x + 10, self.position.y)
+  end
 end
 
 function Pawn:drawEnthusiasmBar()
