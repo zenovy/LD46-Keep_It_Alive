@@ -55,6 +55,10 @@ function love.draw()
     pawn:draw()
   end
   
+  for _, pawn in pairs(pawnList) do
+    pawn:drawEnthusiasmBar()
+  end
+  
   enthusiasmMeter:draw()
   if debugMode then
     love.graphics.print('FPS: ' .. tostring(fps))
