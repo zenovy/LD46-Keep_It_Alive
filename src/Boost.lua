@@ -92,7 +92,7 @@ function Boost:draw(money, mousePosX, mousePosY)
     love.graphics.print('-$' .. tostring(self.cost), self.position.x + self.radius / 3, self.position.y - self.radius / 3)
   end
 
-  if self.showNotEnough then
+  if not self.hasBeenPlaced and self.showNotEnough then
     love.graphics.setColor(1, 0, 0)
     love.graphics.print('Not enough $', mousePosX + self.radius / 3, mousePosY - self.radius / 3)
   end
@@ -120,9 +120,28 @@ function Boost:place(moneyMeter)
 
 end
 
-local FriendBoost = Boost:new({radius = 40, color = {0, 1, 0}, cost = 30, lifetime = 3, boostEnthusiasmRate = 0.2})
-local BalloonBoost = Boost:new({lifetime = 2, boostEnthusiasmRate = 2})
-local PizzaBoost = Boost:new({radius = 40, color = {0, 1, 0}, cost = 5, lifetime = 2})
+local FriendBoost = Boost:new({
+    boostEnthusiasmRate = 0.2,
+    color = {0, 1, 0},
+    cost = 0,
+    lifetime = 3,
+    radius = 40,
+  })
+
+local BalloonBoost = Boost:new({
+    boostEnthusiasmRate = 2,
+    color = {0, 1, 1},
+    cost = 20,
+    lifetime = 2,
+  })
+
+local PizzaBoost = Boost:new({
+    boostEnthusiasmRate = 1,
+    color = {1, 0, 0},
+    cost = 5,
+    lifetime = 2,
+    radius = 40,
+    })
 
 function BalloonBoost:draw(money, mousePosX, mousePosY)
   boostRef.draw(self, money, mousePosX, mousePosY) -- for some reason can't just call Boost.draw(self)
@@ -141,6 +160,7 @@ function BalloonBoost:draw(money, mousePosX, mousePosY)
 end
 
 return {
-  BalloonBoost = BalloonBoost,
-  FriendBoost = FriendBoost,
+  BalloonBoost,
+  FriendBoost,
+  PizzaBoost,
 }

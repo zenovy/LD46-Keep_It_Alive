@@ -33,8 +33,8 @@ function love.load()
   moneyMeter = MoneyMeter:new()
   boostSelectionMenu = BoostSelectionMenu:new()
 
-  Boost.FriendBoost.isSelected = true
-  selectedBoost = Boost.FriendBoost -- TODO this is messy
+  Boost[1].isSelected = true
+  selectedBoost = Boost[1]
   regularFont = love.graphics.getFont()
   bigFont = love.graphics.newFont(Constants.bigFontSize)
 end
@@ -126,12 +126,8 @@ function love.mousepressed(x, y, button)
 end
 
 function love.keypressed(key)
-  local selectedBoostType = nil
-  if key == "1" then
-    selectedBoostType = Boost.FriendBoost
-  elseif key == "2" then
-    selectedBoostType = Boost.BalloonBoost
-  end
+  local selectedBoostType = boostList[tonumber(key)]
+
   if selectedBoostType then
     selectedBoost = selectedBoostType
     for _, boost in pairs(boostList) do
