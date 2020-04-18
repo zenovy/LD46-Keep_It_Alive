@@ -9,7 +9,7 @@ local debugMode = true
 
 local mousePosition = vector()
 
-local lastTime = 0
+local lastTime = nil
 
 local pawnList = {}
 
@@ -25,8 +25,12 @@ end
 function love.update(dt)
   mousePosition.x, mousePosition.y = love.mouse.getPosition()
   fps = math.ceil(1 / dt)
-  if lastTime - love.timer.getTime() > 1 then
-    
+  if not lastTime then lastTime = love.timer.getTime() end
+  if (love.timer.getTime() - lastTime) > 1 then
+    x = math.random() * 300
+    y = math.random() * 300
+    table.insert(pawnList, Pawn:new({position = vector(x, y)}))
+    lastTime = nil
   end
 end
 
