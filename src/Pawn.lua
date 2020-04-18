@@ -10,7 +10,7 @@ function Pawn:new(o)
   return o
 end
 
-function Pawn:draw(pawn)
+function Pawn:draw()
   love.graphics.setColor(0.8, 0.8, 0)
   love.graphics.ellipse('fill', self.position.x, self.position.y + self.size * 1, self.size * 0.75, self.size * 2)
   love.graphics.setColor(1, 1, 1)
