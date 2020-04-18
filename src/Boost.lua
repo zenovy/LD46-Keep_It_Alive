@@ -12,6 +12,7 @@ Boost = {
   hasEffect = false,
   timeSincePlaced = 0,
   color = DEFAULT_COLOR,
+  boostEnthusiasmRate = Constants.defaultBoostEnthusiasmRate,
 }
 local originalBoost = Boost
 
@@ -34,7 +35,7 @@ function Boost:update(dt, pawnList)
     local pawnX = pawn.position.x
     local pawnY = pawn.position.y
     if math.sqrt((pawnX - self.position.x) ^ 2 + (pawnY - self.position.y) ^ 2) < self.radius then
-      pawn.enthusiasm = math.min(1, pawn.enthusiasm + Constants.defaultBoostEnthusiasmRate * dt)
+      pawn.enthusiasm = math.min(1, pawn.enthusiasm + self.boostEnthusiasmRate * dt)
     end
   end
 end
@@ -63,8 +64,8 @@ function Boost:toggleEffect()
 end
 
 
-local FriendBoost = Boost:new({radius = 40, color = {0, 1, 0}, cost = 5, lifetime = 2})
-local BalloonBoost = Boost:new({lifetime = 6})
+local FriendBoost = Boost:new({radius = 40, color = {0, 1, 0}, cost = 0, lifetime = 3, boostEnthusiasmRate = 0.2})
+local BalloonBoost = Boost:new({lifetime = 2, boostEnthusiasmRate = 2})
 local PizzaBoost = Boost:new({radius = 40, color = {0, 1, 0}, cost = 5, lifetime = 2})
 
 function BalloonBoost:draw()
