@@ -5,7 +5,7 @@ local width = 100
 local padding = 5
 local height = 20
 
-EnthusiasmMeter = {percentFilled = 0.9}
+EnthusiasmMeter = {percentFilled = 0.4}
 function EnthusiasmMeter:new(o)
   o = o or {}
   setmetatable(o, self)
@@ -17,7 +17,7 @@ end
 
 function EnthusiasmMeter:draw()
   -- hollow rectangle in filled rectangle
-  love.graphics.setColor(0, 0.8, 0.8)
+  if self.percentFilled < 0.3 then love.graphics.setColor(1, 0, 0) else love.graphics.setColor(0, 0.8, 0.8) end
   love.graphics.rectangle('fill', self.x, self.y, width * self.percentFilled, height)
   love.graphics.setLineWidth(5)
   love.graphics.setColor(1, 1, 1)

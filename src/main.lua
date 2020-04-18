@@ -31,6 +31,7 @@ function clampToBounds(x, y, xBoundLow, yBoundLow, xBoundHigh, yBoundHigh)
 end
 
 function love.load()
+  math.randomseed(os.time())
   if arg[#arg] == "-debug" then require("mobdebug").start() end -- Enables debugging in ZeroBrane
   
   table.insert(pawnList, Pawn:new({position = vector(230, 200)}))
@@ -56,7 +57,7 @@ function love.update(dt)
   end
   enthusiasmSum = enthusiasmSum / #pawnList
   
-  if enthusiasmSum == 0 then
+  if enthusiasmSum < 0.1 then
     lose = true
     return
   end
@@ -147,6 +148,7 @@ function love.mousepressed(x, y, button)
   if not lose and button == 1 and selectedBoost and moneyMeter.amount > selectedBoost.cost then
     moneyMeter.amount = moneyMeter.amount - selectedBoost.cost
     table.insert(placedBoostList, selectedBoost)
+    selectedBoost:toggleEffect()
     selectedBoost = nil
     -- TODO remove below line - just for testing
     selectedBoost = Boost:new() 
