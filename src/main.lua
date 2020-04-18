@@ -17,8 +17,6 @@ local boostList = {}
 local selectedBoost = nil
 local placedBoostList = {}
 
-local moveChance = 0.2
-local moveDist = 10
 
 local lose = false
 
@@ -34,8 +32,8 @@ function love.load()
   math.randomseed(os.time())
   if arg[#arg] == "-debug" then require("mobdebug").start() end -- Enables debugging in ZeroBrane
   
-  table.insert(pawnList, Pawn:new({position = vector(230, 200)}))
-  table.insert(pawnList, Pawn:new({position = vector(400, 300)}))
+  table.insert(pawnList, Pawn:new({position = vector(230, 200), isActive = true}))
+  table.insert(pawnList, Pawn:new({position = vector(400, 300), isActive = true}))
   enthusiasmMeter = EnthusiasmMeter:new()
   moneyMeter = MoneyMeter:new()
 
@@ -52,7 +50,7 @@ function love.update(dt)
   end
   local enthusiasmSum = 0
   for _, pawn in pairs(pawnList) do
-    pawn:update(dt) -- not relevant to rest of what's going on here but no nee
+    pawn:update(dt) -- not relevant to rest of what's going on here but no need
     enthusiasmSum = enthusiasmSum + pawn.enthusiasm
   end
   enthusiasmSum = enthusiasmSum / #pawnList
@@ -77,22 +75,10 @@ function love.update(dt)
     local rand = math.random()
     if rand < enthusiasmMeter.percentFilled then
       local x, y = math.random(bounds[1], bounds[3]), math.random(bounds[2], bounds[4])
-      table.insert(pawnList, Pawn:new({position = vector(x, y), enthusiasm = enthusiasmMeter.percentFilled}))
+      table.insert(pawnList, Pawn:new({targetPosition = vector(x, y), enthusiasm = enthusiasmMeter.percentFilled}))
       moneyMeter.amount = moneyMeter.amount + CASH_PER_NEW_PAWN
     end
 
-    -- Shuffle pawns around
-    for _, pawn in pairs(pawnList) do
-      local rand = math.random()
-      if rand < moveChance then
-        -- base direction off same random; don't bias due to condition
-        local direction = rand / moveChance * 2 * math.pi
-        local moveVec = vector(math.sin(direction), math.cos(direction))
-        local moveVecActual = moveVec:normalized() * moveDist
-        local attemptPos = pawn.position + moveVecActual
-        pawn.position.x, pawn.position.y = clampToBounds(attemptPos.x, attemptPos.y, unpack(bounds))
-      end
-    end
     lastTime = nil
   end
   

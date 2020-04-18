@@ -3,8 +3,15 @@ vector = require "lib/vector"
 local baseSize = 12
 local barHeadPadding = 5
 local decayPerSecond = 0.01
+local WALK_SPEED = 0.5
+local MOVE_CHANCE = 0.2
+local MOVE_DIST = 10
 
-Pawn = {position = vector(15, 15), size = baseSize, enthusiasm = 0.5}
+local PAWN_SPAWN = vector(300, 550)
+local DOOR = vector(300, 500)
+local BOUNDS = {100, 100, 500, 500}
+
+Pawn = {position = PAWN_SPAWN:clone(), size = baseSize, enthusiasm = 0.5, isActive = false, isInside = false}
 function Pawn:new(o)
   o = o or {}
   setmetatable(o, self)
@@ -13,7 +20,26 @@ function Pawn:new(o)
 end
 
 function Pawn:update(dt)
-  self.enthusiasm = math.max(0, self.enthusiasm - decayPerSecond * dt)
+  if self.isActive then
+    self.enthusiasm = math.max(0, self.enthusiasm - decayPerSecond * dt)
+    local rand = math.random()
+    if rand < MOVE_CHANCE * dt then
+      -- base direction off same random; don't bias due to condition
+      local direction = rand / MOVE_CHANCE / dt * 2 * math.pi
+      local moveVec = vector(math.sin(direction), math.cos(direction))
+      local moveVecActual = moveVec:normalized() * MOVE_DIST
+      local attemptPos = self.position + moveVecActual
+      self.position.x, self.position.y = clampToBounds(attemptPos.x, attemptPos.y, unpack(BOUNDS))
+    end
+  elseif self.isInside then
+    local direction = self.targetPosition - self.position
+    self.position = self.position + WALK_SPEED * direction:normalized() 
+    if self.targetPosition:dist2(self.position) < 1 then self.isActive = true end
+  else
+    local direction = DOOR - self.position
+    self.position = self.position + WALK_SPEED * direction:normalized()
+    if DOOR:dist2(self.position) < 1 then self.isInside = true end
+  end
 end
 
 function Pawn:draw()
@@ -33,6 +59,7 @@ function Pawn:draw()
   love.graphics.setLineWidth(2)
   love.graphics.circle('line', self.position.x, self.position.y, self.size)
 end
+
 function Pawn:drawEnthusiasmBar()
   local width = self.size
   local height = self.size / 3
