@@ -19,6 +19,12 @@ local placedBoostList = {}
 local moveChance = 0.2
 local moveDist = 10
 
+local bounds = {100, 100, 500, 500}
+
+function clampToBounds(x, y, xBoundLow, yBoundLow, xBoundHigh, yBoundHigh)
+  return math.min(math.max(x, xBoundLow), xBoundHigh), math.min(math.max(y, yBoundLow), yBoundHigh)
+end
+
 function love.load()
   if arg[#arg] == "-debug" then require("mobdebug").start() end -- Enables debugging in ZeroBrane
   
@@ -57,6 +63,7 @@ function love.update(dt)
     if rand < enthusiasmMeter.percentFilled then
       local x = math.random() * 300
       local y = math.random() * 300
+      local x, y = math.random(bounds[1], bounds[3]), math.random(bounds[2], bounds[4])
       table.insert(pawnList, Pawn:new({position = vector(x, y)}))
     end
 
@@ -67,7 +74,9 @@ function love.update(dt)
         -- base direction off same random; don't bias due to condition
         local direction = rand / moveChance * 2 * math.pi
         local moveVec = vector(math.sin(direction), math.cos(direction))
-        pawn.position = pawn.position + moveVec:normalized() * moveDist
+        local moveVecActual = moveVec:normalized() * moveDist
+        local attemptPos = pawn.position + moveVecActual
+        pawn.position.x, pawn.position.y = clampToBounds(attemptPos.x, attemptPos.y, unpack(bounds))
       end
     end
     lastTime = nil
@@ -89,6 +98,8 @@ function love.update(dt)
 end
 
 function love.draw()
+  love.graphics.setColor(0.4, 0, 0)
+  love.graphics.rectangle('fill', bounds[1], bounds[2], bounds[3] - bounds[1], bounds[4] - bounds[2])
   for _, pawn in pairs(pawnList) do
     pawn:draw()
   end
