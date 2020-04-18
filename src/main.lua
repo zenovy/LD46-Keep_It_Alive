@@ -1,17 +1,20 @@
 vector = require "lib/vector"
 
 Pawn = require "Pawn"
+Boost = require "Boost"
 EnthusiasmMeter = require "EnthusiasmMeter"
 
 local fps = 0
 
 local debugMode = true
 
-local mousePosition = vector()
-
 local lastTime = nil
 
 local pawnList = {}
+local boostList = {}
+
+local selectedBoost = nil
+local placedBoostList = {}
 
 local moveChance = 0.2
 local moveDist = 10
@@ -23,9 +26,14 @@ function love.load()
   table.insert(pawnList, Pawn:new({position = vector(400, 300)}))
   enthusiasmMeter = EnthusiasmMeter:new()
 
+  -- TODO: When picking boosts is implemented, this won't initialize here
+  selectedBoost = Boost:new()
 end
 
 function love.update(dt)
+  if selectedBoost then
+    selectedBoost.position.x, selectedBoost.position.y = love.mouse.getPosition()
+  end
   local enthusiasmSum = 0
   for _, pawn in pairs(pawnList) do
     enthusiasmSum = enthusiasmSum + pawn.enthusiasm
@@ -33,7 +41,6 @@ function love.update(dt)
   enthusiasmSum = enthusiasmSum / #pawnList
   
   enthusiasmMeter.percentFilled = enthusiasmSum
-  mousePosition.x, mousePosition.y = love.mouse.getPosition()
   fps = math.ceil(1 / dt)
 
   if not lastTime then lastTime = love.timer.getTime() end
@@ -60,20 +67,37 @@ function love.update(dt)
     end
     lastTime = nil
   end
+  
+  local deletedItemsIndices = {}
+  -- Update enthusiasm in boost
+  for i, boost in pairs(placedBoostList) do
+    local killBoost = boost:update(dt, pawnList)
+    if killBoost then table.insert(deletedItemsIndices, i) end
+  end
+  
+  -- This is to avoid removing items until after iterating
+  local mod = 0
+  for i in pairs(deletedItemsIndices) do
+    table.remove(placedBoostList, i - mod)
+    mod = mod + 1
+  end  
 end
 
 function love.draw()
-  local mousePositionX, mousePositionY = love.mouse.getPosition()
-
-  love.graphics.setColor(1, 1, 1, 0.5)
-  love.graphics.circle('fill', mousePositionX, mousePositionY, 50)
-
   for _, pawn in pairs(pawnList) do
     pawn:draw()
   end
   
   for _, pawn in pairs(pawnList) do
     pawn:drawEnthusiasmBar()
+  end
+
+  if selectedBoost then
+    selectedBoost:draw()
+  end
+  
+  for _, boost in pairs(placedBoostList) do
+    boost:draw()
   end
   
   enthusiasmMeter:draw()
@@ -83,17 +107,11 @@ function love.draw()
 end
 
 function love.mousepressed(x, y, button)
-  if button == 1 then
-    for _, pawn in pairs(pawnList) do
-      -- TODO this will need some polishing to get the distance from 'middle' of pawn right
-      local pawnX = pawn.position.x
-      local pawnY = pawn.position.y
-      if math.sqrt((pawnX - x) ^ 2 + (pawnY - y) ^ 2) < 50 then
-        pawn.enthusiasm = 1
-      end
-    end
-    
+  if button == 1 and selectedBoost then
+    table.insert(placedBoostList, selectedBoost)
+    selectedBoost = nil
+    -- TODO remove below line - just for testing
+    selectedBoost = Boost:new() 
   end
-  
 end
 
