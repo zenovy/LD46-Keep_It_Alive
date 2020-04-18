@@ -3,6 +3,7 @@ vector = require "lib/vector"
 Pawn = require "Pawn"
 Boost = require "Boost"
 EnthusiasmMeter = require "EnthusiasmMeter"
+MoneyMeter = require "MoneyMeter"
 
 local fps = 0
 
@@ -31,6 +32,7 @@ function love.load()
   table.insert(pawnList, Pawn:new({position = vector(230, 200)}))
   table.insert(pawnList, Pawn:new({position = vector(400, 300)}))
   enthusiasmMeter = EnthusiasmMeter:new()
+  moneyMeter = MoneyMeter:new()
 
   -- TODO: When picking boosts is implemented, this won't initialize here
   selectedBoost = Boost:new()
@@ -117,6 +119,7 @@ function love.draw()
   end
   
   enthusiasmMeter:draw()
+  moneyMeter:draw()
   if debugMode then
     love.graphics.print('FPS: ' .. tostring(fps))
   end
