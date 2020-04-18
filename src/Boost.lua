@@ -133,7 +133,7 @@ local FriendBoost = Boost:new({
     color = {0, 1, 0},
     cost = 0,
     lifetime = 3,
-    radius = 40,
+    radius = 20,
   })
 
 local BalloonBoost = Boost:new({
@@ -147,9 +147,9 @@ local PizzaBoost = Boost:new({
     boostEnthusiasmRate = 1,
     color = {1, 0, 0},
     cost = 5,
-    lifetime = 2,
-    radius = 40,
-    })
+    lifetime = 5,
+    radius = 60,
+  })
 
 function BalloonBoost:draw(money, mousePosX, mousePosY)
   boostRef.draw(self, money, mousePosX, mousePosY) -- for some reason can't just call Boost.draw(self)
@@ -164,7 +164,7 @@ function BalloonBoost:draw(money, mousePosX, mousePosY)
 end
 
 return {
-  BalloonBoost,
   FriendBoost,
   PizzaBoost,
+  BalloonBoost,
 }
