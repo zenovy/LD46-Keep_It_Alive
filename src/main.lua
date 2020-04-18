@@ -27,9 +27,13 @@ function love.update(dt)
   fps = math.ceil(1 / dt)
   if not lastTime then lastTime = love.timer.getTime() end
   if (love.timer.getTime() - lastTime) > 1 then
-    x = math.random() * 300
-    y = math.random() * 300
-    table.insert(pawnList, Pawn:new({position = vector(x, y)}))
+    local rand = math.random()
+    if rand < enthusiasmMeter.percentFilled then
+      local x = math.random() * 300
+      local y = math.random() * 300
+      table.insert(pawnList, Pawn:new({position = vector(x, y)}))
+    end
+    
     lastTime = nil
   end
 end
