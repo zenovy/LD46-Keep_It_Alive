@@ -82,12 +82,13 @@ function love.update(dt)
 end
 
 function love.draw()
+  local mousePosX, mousePosY = love.mouse.getPosition()
   -- Draw Constants.room
-  love.graphics.setColor(0.4, 0, 0)
+  love.graphics.setColor(0.5, 0.5, 0.5)
   love.graphics.rectangle('fill', Constants.room[1], Constants.room[2], Constants.room[3] - Constants.room[1], Constants.room[4] - Constants.room[2])
   
   for _, boost in pairs(boostList) do
-    boost:draw(love.mouse.getPosition())
+    boost:draw(moneyMeter.amount, mousePosX, mousePosY)
   end
   
   -- Draw Pawns
@@ -99,7 +100,6 @@ function love.draw()
   for _, pawn in pairs(pawnList) do
     pawn:drawEnthusiasmBar()
   end
-
   
   -- Draw UI
   enthusiasmMeter:draw()
@@ -120,9 +120,8 @@ function love.draw()
 end
 
 function love.mousepressed(x, y, button)
-  if not lose and button == 1 and moneyMeter.amount >= selectedBoost.cost and not selectedBoost.hasBeenPlaced then
-    moneyMeter.amount = moneyMeter.amount - selectedBoost.cost
-    selectedBoost:place()
+  if not lose and button == 1 then
+    selectedBoost:place(moneyMeter)
   end
 end
 

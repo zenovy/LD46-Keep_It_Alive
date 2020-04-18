@@ -1,6 +1,6 @@
 local padding = 30
 
-MoneyMeter = {amount = 200}
+MoneyMeter = {amount = 10}
 
 function MoneyMeter:new(o)
   o = o or {}
