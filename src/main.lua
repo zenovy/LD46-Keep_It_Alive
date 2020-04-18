@@ -5,6 +5,9 @@ Boost = require "Boost"
 EnthusiasmMeter = require "EnthusiasmMeter"
 MoneyMeter = require "MoneyMeter"
 
+Constants = require "Constants"
+UtilFuncs = require "UtilFuncs"
+
 local fps = 0
 
 local debugMode = true
@@ -15,18 +18,10 @@ local pawnList = {}
 local boostList = {}
 
 local selectedBoost = nil
+local selectedBoostType = nil
 local placedBoostList = {}
 
-
 local lose = false
-
-local CASH_PER_NEW_PAWN = 10
-
-local bounds = {100, 100, 500, 500}
-
-function clampToBounds(x, y, xBoundLow, yBoundLow, xBoundHigh, yBoundHigh)
-  return math.min(math.max(x, xBoundLow), xBoundHigh), math.min(math.max(y, yBoundLow), yBoundHigh)
-end
 
 function love.load()
   math.randomseed(os.time())
@@ -38,9 +33,10 @@ function love.load()
   moneyMeter = MoneyMeter:new()
 
   -- TODO: When picking boosts is implemented, this won't initialize here
-  selectedBoost = Boost:new()
+  selectedBoost = Boost.FriendBoost:new()
+  selectedBoostType = Boost.FriendBoost
   regularFont = love.graphics.getFont()
-  bigFont = love.graphics.newFont(40)
+  bigFont = love.graphics.newFont(Constants.bigFontSize)
 end
 
 function love.update(dt)
@@ -55,7 +51,7 @@ function love.update(dt)
   end
   enthusiasmSum = enthusiasmSum / #pawnList
   
-  if enthusiasmSum < 0.1 then
+  if enthusiasmSum < Constants.LOSE_PERCENT then
     lose = true
     return
   end
@@ -73,10 +69,10 @@ function love.update(dt)
   if (love.timer.getTime() - lastTime) > 1 then
     -- Insert a new pawn (chance based on enthusiasm)
     local rand = math.random()
-    if rand < enthusiasmMeter.percentFilled then
-      local x, y = math.random(bounds[1], bounds[3]), math.random(bounds[2], bounds[4])
-      table.insert(pawnList, Pawn:new({targetPosition = vector(x, y), enthusiasm = enthusiasmMeter.percentFilled}))
-      moneyMeter.amount = moneyMeter.amount + CASH_PER_NEW_PAWN
+    if rand < enthusiasmMeter.percentFilled * Constants.newPawnFactor then
+      local x, y = math.random(Constants.room[1], Constants.room[3]), math.random(Constants.room[2], Constants.room[4])
+      table.insert(pawnList, Pawn:new({targetPosition = vector(x, y)}))
+      moneyMeter.amount = moneyMeter.amount + Constants.cashPerNewPawn
     end
 
     lastTime = nil
@@ -98,8 +94,9 @@ function love.update(dt)
 end
 
 function love.draw()
+  -- Draw Constants.room
   love.graphics.setColor(0.4, 0, 0)
-  love.graphics.rectangle('fill', bounds[1], bounds[2], bounds[3] - bounds[1], bounds[4] - bounds[2])
+  love.graphics.rectangle('fill', Constants.room[1], Constants.room[2], Constants.room[3] - Constants.room[1], Constants.room[4] - Constants.room[2])
   for _, pawn in pairs(pawnList) do
     pawn:draw()
   end
@@ -131,13 +128,21 @@ function love.draw()
 end
 
 function love.mousepressed(x, y, button)
-  if not lose and button == 1 and selectedBoost and moneyMeter.amount > selectedBoost.cost then
+  if not lose and button == 1 and selectedBoost and moneyMeter.amount >= selectedBoost.cost then
     moneyMeter.amount = moneyMeter.amount - selectedBoost.cost
     table.insert(placedBoostList, selectedBoost)
     selectedBoost:toggleEffect()
-    selectedBoost = nil
-    -- TODO remove below line - just for testing
-    selectedBoost = Boost:new() 
+    selectedBoost = selectedBoostType:new() 
   end
 end
+
+function love.keypressed(key)
+  if key == "1" then
+    selectedBoostType = Boost.FriendBoost
+  elseif key == "2" then
+    selectedBoostType = Boost.BalloonBoost
+  end
+  selectedBoost = selectedBoostType:new()
+end
+
 

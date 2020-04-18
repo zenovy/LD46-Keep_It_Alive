@@ -1,12 +1,19 @@
-
-local defaultRadius = 100
-local defaultLifetime = 2 -- seconds
-local defaultCost = 20
+Constants = require "Constants"
 
 local BALLOON_RADIUS = 6
 local NUM_BALLOONS = 5
 
-Boost = {radius = defaultRadius, timeSincePlaced = 0, lifetime = defaultLifetime, cost = defaultCost, hasEffect = false}
+local DEFAULT_COLOR = {1, 1, 1}
+
+Boost = {
+  radius = Constants.defaultBoostRadius,
+  lifetime = Constants.defaultBoostLifetime,
+  cost = Constants.defaultBoostCost,
+  hasEffect = false,
+  timeSincePlaced = 0,
+  color = DEFAULT_COLOR,
+}
+
 function Boost:new(o)
   o = o or {}
   setmetatable(o, self)
@@ -26,14 +33,14 @@ function Boost:update(dt, pawnList)
     local pawnX = pawn.position.x
     local pawnY = pawn.position.y
     if math.sqrt((pawnX - self.position.x) ^ 2 + (pawnY - self.position.y) ^ 2) < self.radius then
-      pawn.enthusiasm = math.min(1, pawn.enthusiasm + 0.1 * dt)
+      pawn.enthusiasm = math.min(1, pawn.enthusiasm + Constants.defaultBoostEnthusiasmRate * dt)
     end
   end
 end
 
 function Boost:draw()
   -- TODO make them glow/pulse if they're placed - use sin(x) function iterator-type thing
-  love.graphics.setColor(1, 1, 1, 0.5)
+  love.graphics.setColor(self.color[1], self.color[2], self.color[3], 0.5)
   love.graphics.circle('fill', self.position.x, self.position.y, self.radius)
   if self.hasEffect then
     for _, balloon in pairs(self.balloons) do
@@ -49,7 +56,6 @@ function Boost:draw()
 end
 
 function Boost:toggleEffect()
-  self.hasEffect = true
   self.balloons = {}
   for i = 1, NUM_BALLOONS do
     local distanceFromCenter = math.random() * self.radius * 0.6 + self.radius * 0.2
@@ -58,6 +64,13 @@ function Boost:toggleEffect()
     local y = self.position.y + math.sin(degreeFromZero) * distanceFromCenter
     table.insert(self.balloons, {x = x, y = y, dy = 0, floatRate = math.random() * 0.1, color = {math.random(), math.random(), math.random()}})
   end
+  self.hasEffect = true
 end
 
-return Boost
+local BalloonBoost = Boost:new()
+local FriendBoost = Boost:new({radius = 40, color = {0, 1, 0}, cost = 5})
+
+return {
+  BalloonBoost = BalloonBoost,
+  FriendBoost = FriendBoost,
+}
