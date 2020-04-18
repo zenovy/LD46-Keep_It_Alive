@@ -76,7 +76,7 @@ function love.update(dt)
     local rand = math.random()
     if rand < enthusiasmMeter.percentFilled then
       local x, y = math.random(bounds[1], bounds[3]), math.random(bounds[2], bounds[4])
-      table.insert(pawnList, Pawn:new({position = vector(x, y)}))
+      table.insert(pawnList, Pawn:new({position = vector(x, y), enthusiasm = enthusiasmMeter.percentFilled}))
       moneyMeter.amount = moneyMeter.amount + CASH_PER_NEW_PAWN
     end
 
