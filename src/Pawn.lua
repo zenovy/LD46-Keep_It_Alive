@@ -2,7 +2,7 @@ vector = require "lib/vector"
 
 local baseSize = 10
 
-Pawn = {position = vector(15, 15), size = baseSize}
+Pawn = {position = vector(15, 15), size = baseSize, enthusiasm = 0.5}
 function Pawn:new(o)
   o = o or {}
   setmetatable(o, self)

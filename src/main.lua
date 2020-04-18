@@ -23,6 +23,13 @@ function love.load()
 end
 
 function love.update(dt)
+  local enthusiasmSum = 0
+  for _, pawn in pairs(pawnList) do
+    enthusiasmSum = enthusiasmSum + pawn.enthusiasm
+  end
+  enthusiasmSum = enthusiasmSum / #pawnList
+  
+  enthusiasmMeter.percentFilled = enthusiasmSum
   mousePosition.x, mousePosition.y = love.mouse.getPosition()
   fps = math.ceil(1 / dt)
   if not lastTime then lastTime = love.timer.getTime() end
