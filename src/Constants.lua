@@ -8,6 +8,7 @@ Constants ={
   defaultBoostRadius = 80,
   defaultBoostEnthusiasmRate = 1,
   defaultBoostLifetime = 1, -- seconds
+  startingCash = 100,
   
   room = {100, 100, 500, 500},
   LOSE_PERCENT = 0.1,

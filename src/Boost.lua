@@ -1,4 +1,5 @@
 Constants = require "Constants"
+PrimitiveGraphics = require "PrimitiveGraphics"
 
 local BALLOON_RADIUS = 6
 local NUM_BALLOONS = 5
@@ -106,12 +107,19 @@ function Boost:place(moneyMeter)
 
     -- TODO move into BalloonBoost derived method
     self.balloons = {}
+    local balloonBrightnessFactor = 0.5
     for i = 1, NUM_BALLOONS do
-      local distanceFromCenter = math.random() * self.radius * 0.6 + self.radius * 0.2
-      local degreeFromZero = math.random() * 2 * math.pi
+      local spacingFactor = i / NUM_BALLOONS -- keeps an even distribution
+      local distanceFromCenter = self.radius * spacingFactor
+      local degreeFromZero = (2 * math.pi) * spacingFactor
       local x = self.position.x + math.cos(degreeFromZero) * distanceFromCenter
       local y = self.position.y + math.sin(degreeFromZero) * distanceFromCenter
-      table.insert(self.balloons, {x = x, y = y, dy = 0, floatRate = math.random() * 0.1, color = {math.random(), math.random(), math.random()}})
+      local color = {
+        math.random() * (1 - balloonBrightnessFactor) + balloonBrightnessFactor,
+        math.random() * (1 - balloonBrightnessFactor) + balloonBrightnessFactor,
+        math.random() * (1 - balloonBrightnessFactor) + balloonBrightnessFactor,
+      }
+      table.insert(self.balloons, {x = x, y = y, dy = 0, floatRate = math.random() * 0.1, color = color})
     end
   elseif moneyMeter.amount < self.cost then
     self.showNotEnough = true
@@ -147,11 +155,7 @@ function BalloonBoost:draw(money, mousePosX, mousePosY)
   boostRef.draw(self, money, mousePosX, mousePosY) -- for some reason can't just call Boost.draw(self)
   if self.hasBeenPlaced then
     for _, balloon in pairs(self.balloons) do
-      love.graphics.setColor(1, 1, 1)
-      love.graphics.setLineWidth(1)
-      love.graphics.line(balloon.x, balloon.y, balloon.x, balloon.y + BALLOON_RADIUS * 5)
-      love.graphics.setColor(unpack(balloon.color))
-      love.graphics.circle('fill', balloon.x, balloon.y, BALLOON_RADIUS)
+      PrimitiveGraphics.drawBalloon(balloon.x, balloon.y, BALLOON_RADIUS, balloon.color)
       balloon.dy = balloon.dy - 0.1 * balloon.floatRate
       balloon.y = balloon.y + balloon.dy
       balloon.floatRate = balloon.floatRate + math.random() * 0.1

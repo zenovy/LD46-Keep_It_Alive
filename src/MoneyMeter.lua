@@ -1,6 +1,8 @@
+Constants = require "Constants"
+
 local padding = 30
 
-MoneyMeter = {amount = 10}
+MoneyMeter = {amount = Constants.startingCash}
 
 function MoneyMeter:new(o)
   o = o or {}
