@@ -13,7 +13,7 @@ function Pawn:new(o)
 end
 
 function Pawn:update(dt)
-  self.enthusiasm = self.enthusiasm - decayPerSecond * dt
+  self.enthusiasm = math.max(0, self.enthusiasm - decayPerSecond * dt)
 end
 
 function Pawn:draw()

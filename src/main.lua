@@ -20,6 +20,8 @@ local placedBoostList = {}
 local moveChance = 0.2
 local moveDist = 10
 
+local lose = false
+
 local bounds = {100, 100, 500, 500}
 
 function clampToBounds(x, y, xBoundLow, yBoundLow, xBoundHigh, yBoundHigh)
@@ -36,9 +38,12 @@ function love.load()
 
   -- TODO: When picking boosts is implemented, this won't initialize here
   selectedBoost = Boost:new()
+  regularFont = love.graphics.getFont()
+  bigFont = love.graphics.newFont(40)
 end
 
 function love.update(dt)
+  if lose then return end
   if selectedBoost then
     selectedBoost.position.x, selectedBoost.position.y = love.mouse.getPosition()
   end
@@ -49,12 +54,17 @@ function love.update(dt)
   end
   enthusiasmSum = enthusiasmSum / #pawnList
   
+  if enthusiasmSum == 0 then
+    lose = true
+    return
+  end
+
+  enthusiasmMeter.percentFilled = math.max(0, enthusiasmSum)
+  fps = math.ceil(1 / dt)
+
   for _, pawn in pairs(pawnList) do
     pawn:update(dt)
   end
-
-  enthusiasmMeter.percentFilled = enthusiasmSum
-  fps = math.ceil(1 / dt)
 
   if not lastTime then lastTime = love.timer.getTime() end
   
@@ -120,6 +130,13 @@ function love.draw()
   
   enthusiasmMeter:draw()
   moneyMeter:draw()
+  
+  if lose then
+    love.graphics.setFont(bigFont)
+    love.graphics.print("YOU LOSE!", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
+    love.graphics.setFont(regularFont)
+  end
+
   if debugMode then
     love.graphics.print('FPS: ' .. tostring(fps))
   end
