@@ -16,11 +16,9 @@ local debugMode = true
 local lastTime = nil
 
 local pawnList = {}
-local boostList = {}
 
+local boostList = Boost
 local selectedBoost = nil
-local selectedBoostType = nil
-local placedBoostList = {}
 local boostSelectionMenu = nil
 
 local lose = false
@@ -35,18 +33,15 @@ function love.load()
   moneyMeter = MoneyMeter:new()
   boostSelectionMenu = BoostSelectionMenu:new()
 
-  -- TODO: When picking boosts is implemented, this won't initialize here
-  selectedBoost = Boost.FriendBoost:new()
-  selectedBoostType = Boost.FriendBoost
+  Boost.FriendBoost.isSelected = true
+  selectedBoost = Boost.FriendBoost -- TODO this is messy
   regularFont = love.graphics.getFont()
   bigFont = love.graphics.newFont(Constants.bigFontSize)
 end
 
 function love.update(dt)
   if lose then return end
-  if selectedBoost then
-    selectedBoost.position.x, selectedBoost.position.y = love.mouse.getPosition()
-  end
+
   local enthusiasmSum = 0
   for _, pawn in pairs(pawnList) do
     pawn:update(dt) -- not relevant to rest of what's going on here but no need
@@ -80,20 +75,10 @@ function love.update(dt)
 
     lastTime = nil
   end
-  
-  local deletedItemsIndices = {}
-  -- Update enthusiasm in boost
-  for i, boost in pairs(placedBoostList) do
-    local killBoost = boost:update(dt, pawnList)
-    if killBoost then table.insert(deletedItemsIndices, i) end
+
+  for i, boost in pairs(boostList) do
+    boost:update(dt, pawnList, love.mouse.getPosition())
   end
-  
-  -- This is to avoid removing items until after iterating
-  local mod = 0
-  for i in pairs(deletedItemsIndices) do
-    table.remove(placedBoostList, i - mod)
-    mod = mod + 1
-  end  
 end
 
 function love.draw()
@@ -101,13 +86,8 @@ function love.draw()
   love.graphics.setColor(0.4, 0, 0)
   love.graphics.rectangle('fill', Constants.room[1], Constants.room[2], Constants.room[3] - Constants.room[1], Constants.room[4] - Constants.room[2])
   
-  -- Draw Boost under cursor
-  if selectedBoost then
-    selectedBoost:draw()
-  end
-  
-  for _, boost in pairs(placedBoostList) do
-    boost:draw()
+  for _, boost in pairs(boostList) do
+    boost:draw(love.mouse.getPosition())
   end
   
   -- Draw Pawns
@@ -140,21 +120,25 @@ function love.draw()
 end
 
 function love.mousepressed(x, y, button)
-  if not lose and button == 1 and selectedBoost and moneyMeter.amount >= selectedBoost.cost then
+  if not lose and button == 1 and moneyMeter.amount >= selectedBoost.cost and not selectedBoost.hasBeenPlaced then
     moneyMeter.amount = moneyMeter.amount - selectedBoost.cost
-    table.insert(placedBoostList, selectedBoost)
-    selectedBoost:toggleEffect()
-    selectedBoost = selectedBoostType:new() 
+    selectedBoost:place()
   end
 end
 
 function love.keypressed(key)
+  local selectedBoostType = nil
   if key == "1" then
     selectedBoostType = Boost.FriendBoost
   elseif key == "2" then
     selectedBoostType = Boost.BalloonBoost
   end
-  selectedBoost = selectedBoostType:new()
+  if selectedBoostType then
+    selectedBoost = selectedBoostType
+    for _, boost in pairs(boostList) do
+      boost.isSelected = (boost == selectedBoostType)
+    end
+  end
 end
 
 

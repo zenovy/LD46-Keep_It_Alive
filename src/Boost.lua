@@ -9,12 +9,12 @@ Boost = {
   radius = Constants.defaultBoostRadius,
   lifetime = Constants.defaultBoostLifetime,
   cost = Constants.defaultBoostCost,
-  hasEffect = false,
+  hasBeenPlaced = false,
   timeSincePlaced = 0,
   color = DEFAULT_COLOR,
   boostEnthusiasmRate = Constants.defaultBoostEnthusiasmRate,
 }
-local originalBoost = Boost
+local boostRef = Boost
 
 function Boost:new(o)
   o = o or {}
@@ -24,23 +24,39 @@ function Boost:new(o)
   return o
 end
 
-function Boost:update(dt, pawnList)
-  self.timeSincePlaced = self.timeSincePlaced + dt
-  if self.timeSincePlaced > self.lifetime then
-    return true -- kill boost
+function Boost:update(dt, pawnList, mousePosX, mousePosY)
+  if not self.isSelected and not self.hasBeenPlaced then return end
+
+  if self.isSelected and not self.hasBeenPlaced then
+    self.position.x, self.position.y = mousePosX, mousePosY
   end
 
-  for _, pawn in pairs(pawnList) do
-    -- TODO this will need some polishing to get the distance from 'middle' of pawn right
-    local pawnX = pawn.position.x
-    local pawnY = pawn.position.y
-    if math.sqrt((pawnX - self.position.x) ^ 2 + (pawnY - self.position.y) ^ 2) < self.radius then
-      pawn.enthusiasm = math.min(1, pawn.enthusiasm + self.boostEnthusiasmRate * dt)
+  if self.hasBeenPlaced then
+    self.timeSincePlaced = self.timeSincePlaced + dt
+    for _, pawn in pairs(pawnList) do
+      -- TODO this will need some polishing on Pawn side to get the distance from 'middle' of pawn right
+      if math.abs(pawn.position:dist(self.position)) < self.radius then
+        pawn.enthusiasm = math.min(1, pawn.enthusiasm + self.boostEnthusiasmRate * dt)
+      end
     end
+  end
+  
+  if self.timeSincePlaced > self.lifetime then
+    self.hasBeenPlaced = false
+    self.timeSincePlaced = 0
   end
 end
 
-function Boost:draw()
+function Boost:draw(mousePosX, mousePosY)
+  if not self.isSelected and not self.hasBeenPlaced then return end
+
+  -- Draw outline if has already been placed
+  if self.hasBeenPlaced and self.isSelected then
+    love.graphics.setColor(self.color[1], self.color[2], self.color[3])
+    love.graphics.setLineWidth(1)
+    love.graphics.circle('line', mousePosX, mousePosY, self.radius)
+  end
+
   if self.timeSincePlaced > 0 then
     local pulseFactor = math.sin(self.timeSincePlaced * 10) * 0.2
     love.graphics.setColor(self.color[1] + pulseFactor, self.color[2] + pulseFactor, self.color[3] + pulseFactor, 0.5)
@@ -51,7 +67,7 @@ function Boost:draw()
   love.graphics.circle('fill', self.position.x, self.position.y, self.radius)
 end
 
-function Boost:toggleEffect()
+function Boost:place()
   self.balloons = {}
   for i = 1, NUM_BALLOONS do
     local distanceFromCenter = math.random() * self.radius * 0.6 + self.radius * 0.2
@@ -60,17 +76,16 @@ function Boost:toggleEffect()
     local y = self.position.y + math.sin(degreeFromZero) * distanceFromCenter
     table.insert(self.balloons, {x = x, y = y, dy = 0, floatRate = math.random() * 0.1, color = {math.random(), math.random(), math.random()}})
   end
-  self.hasEffect = true
+  self.hasBeenPlaced = true
 end
-
 
 local FriendBoost = Boost:new({radius = 40, color = {0, 1, 0}, cost = 0, lifetime = 3, boostEnthusiasmRate = 0.2})
 local BalloonBoost = Boost:new({lifetime = 2, boostEnthusiasmRate = 2})
 local PizzaBoost = Boost:new({radius = 40, color = {0, 1, 0}, cost = 5, lifetime = 2})
 
-function BalloonBoost:draw()
-  originalBoost.draw(self) -- for some reason can't just call Boost.draw(self)
-  if self.hasEffect then
+function BalloonBoost:draw(mousePosX, mousePosY)
+  boostRef.draw(self, mousePosX, mousePosY) -- for some reason can't just call Boost.draw(self)
+  if self.hasBeenPlaced then
     for _, balloon in pairs(self.balloons) do
       love.graphics.setColor(1, 1, 1)
       love.graphics.setLineWidth(1)
