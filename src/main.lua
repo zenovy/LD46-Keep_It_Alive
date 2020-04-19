@@ -6,7 +6,10 @@ EnthusiasmMeter = require "EnthusiasmMeter"
 MoneyMeter = require "MoneyMeter"
 BoostSelectionMenu = require "BoostSelectionMenu"
 
+StartMenu = require "StartMenu"
+
 Constants = require "Constants"
+GameData = require "GameData"
 UtilFuncs = require "UtilFuncs"
 
 -- Debug variables
@@ -33,6 +36,8 @@ local game = {
 function love.load()
   math.randomseed(os.time())
   if arg[#arg] == "-debug" then require("mobdebug").start() end -- Enables debugging in ZeroBrane
+  GameData.windowWidth = love.graphics.getWidth()
+  GameData.windowHeight = love.graphics.getHeight()
 
   -- Load images assets
   floor = love.graphics.newImage('assets/floor.png')
@@ -47,9 +52,9 @@ function love.load()
 --  cursorList = {nil, pizzaCursor, balloonCursor, stereoCursor}
 
   -- Fonts
-  regularFont = love.graphics.getFont()
-  feedbackFont = love.graphics.newFont(Constants.feedbackFontSize)
-  bigFont = love.graphics.newFont(Constants.bigFontSize)
+  GameData.regularFont = love.graphics.getFont()
+  GameData.feedbackFont = love.graphics.newFont(Constants.feedbackFontSize)
+  GameData.bigFont = love.graphics.newFont(Constants.bigFontSize)
 
   Boost.BoostLoad()
 
@@ -65,6 +70,7 @@ function love.load()
   enthusiasmMeter = EnthusiasmMeter:new()
   moneyMeter = MoneyMeter:new()
   boostSelectionMenu = BoostSelectionMenu:new()
+  startMenu = StartMenu:new()
 end
 
 function love.update(dt)
@@ -139,19 +145,23 @@ function love.draw()
   
   -- Draw UI
   enthusiasmMeter:draw()
-  moneyMeter:draw()
+  moneyMeter:draw(#pawnList)
   boostSelectionMenu:draw()
   
   -- Draw Lose UI
   if lose then
-    love.graphics.setFont(bigFont)
+    love.graphics.setFont(GameData.bigFont)
     love.graphics.print("YOU LOSE!", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
-    love.graphics.setFont(regularFont)
+    love.graphics.setFont(GameData.regularFont)
   end
 
   -- Draw Debug UI
   if debugMode then
     love.graphics.print('FPS: ' .. tostring(fps))
+  end
+
+  if not game.hasStarted then
+    startMenu.draw()
   end
 end
 

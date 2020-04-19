@@ -1,4 +1,5 @@
-Constants = require "Constants"
+local Constants = require "Constants"
+local GameData = require "GameData"
 
 local TIME_TO_SHOW_NOT_ENOUGH = 1 -- seconds until 'not enough $' text disappears
 
@@ -19,8 +20,6 @@ function Boost:new(o)
   setmetatable(o, self)
   self.__index = self
   o.position = vector:new()
-  regularFont = love.graphics.getFont()
-  feedbackFont = love.graphics.newFont(Constants.feedbackFontSize)
   return o
 end
 
@@ -100,24 +99,24 @@ function Boost:draw(money, mousePosX, mousePosY)
   love.graphics.circle(lineType, self.position.x, self.position.y, self.radius)
   love.graphics.setColor(0, 0, 0)
   if self.timeSincePlaced > 0 then
-    love.graphics.setFont(feedbackFont)
+    love.graphics.setFont(GameData.feedbackFont)
     love.graphics.print(math.ceil(self.lifetime - self.timeSincePlaced), self.position.x - 5, self.position.y - 10)
-    love.graphics.setFont(regularFont)
+    love.graphics.setFont(GameData.regularFont)
   end
 
   -- Show how much it cost
   if self.timeSincePlaced > 0 and self.timeSincePlaced < 1 and self.cost > 0 then
     love.graphics.setColor(1, 0, 0)
-    love.graphics.setFont(feedbackFont)
+    love.graphics.setFont(GameData.feedbackFont)
     love.graphics.print('-$' .. tostring(self.cost), self.position.x + self.radius / 3, self.position.y - self.radius / 3)
-    love.graphics.setFont(regularFont)
+    love.graphics.setFont(GameData.regularFont)
   end
 
   if not self.hasBeenPlaced and self.showNotEnough then
     love.graphics.setColor(1, 0, 0)
-    love.graphics.setFont(feedbackFont)
+    love.graphics.setFont(GameData.feedbackFont)
     love.graphics.print('Not enough $', mousePosX + self.radius / 3, mousePosY - self.radius / 3)
-    love.graphics.setFont(regularFont)
+    love.graphics.setFont(GameData.regularFont)
   end
 
 end

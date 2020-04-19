@@ -1,7 +1,8 @@
 vector = require "lib/vector"
 
-Constants = require "Constants"
-UtilFuncs = require "UtilFuncs"
+local Constants = require "Constants"
+local GameData = require "GameData"
+local UtilFuncs = require "UtilFuncs"
 
 local PAWN_SPAWN = vector(300, 550)
 

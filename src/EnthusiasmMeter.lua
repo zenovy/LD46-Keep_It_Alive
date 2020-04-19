@@ -3,7 +3,7 @@ vector = require "lib/vector"
 local RISK_PERCENT = 0.3 -- percent at which bar shows red
 
 -- Constants
-local width = 100
+local width = 120
 local padding = 5
 local height = 20
 
