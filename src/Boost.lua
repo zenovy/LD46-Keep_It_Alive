@@ -79,7 +79,7 @@ function Boost:draw(money, mousePosX, mousePosY)
   if not self.isSelected and not self.hasBeenPlaced then return end
 
   -- Draw outline if has already been placed OR not enough $
-  if (self.hasBeenPlaced and self.isSelected) or (self.isSelected and self.cost > money) then
+  if (self.hasBeenPlaced and self.isSelected) or (self.isSelected and self.cost > money) and GameData.game.isActive then
     love.graphics.setColor(self.color)
     love.graphics.setLineWidth(1)
     love.graphics.circle('line', mousePosX, mousePosY, self.radius)
@@ -125,6 +125,7 @@ function Boost:place(moneyMeter)
   if moneyMeter.amount >= self.cost and not self.hasBeenPlaced then
     moneyMeter.amount = moneyMeter.amount - self.cost
     self.hasBeenPlaced = true
+    GameData[self.name .. 'Times'] = (GameData[self.name .. 'Times'] and GameData[self.name .. 'Times'] + 1) or 1
   elseif moneyMeter.amount < self.cost then
     self.showNotEnough = true
     self.timeSinceShownNotEnough = 0
