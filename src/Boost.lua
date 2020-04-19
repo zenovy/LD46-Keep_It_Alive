@@ -1,5 +1,4 @@
 Constants = require "Constants"
-PrimitiveGraphics = require "PrimitiveGraphics"
 
 local BALLOON_RADIUS = 6
 local NUM_BALLOONS = 5
@@ -29,11 +28,18 @@ function Boost:new(o)
 end
 
 function BoostLoad()
-  local balloonRed = love.graphics.newImage('balloon-red.png')
-  local balloonBlue = love.graphics.newImage('balloon-blue.png')
-  local balloonGreen = love.graphics.newImage('balloon-green.png')
-  local balloons = {balloonRed, balloonBlue, balloonGreen}
-  Boost.balloonSprites = balloons
+  Boost.balloonSprites = {
+    love.graphics.newImage('assets/balloon-red.png'),
+    love.graphics.newImage('assets/balloon-blue.png'),
+    love.graphics.newImage('assets/balloon-green.png'),
+  }
+
+  Boost.stereoSprites = {
+    love.graphics.newImage('assets/stereo-1.png'),
+    love.graphics.newImage('assets/stereo-2.png'),
+    love.graphics.newImage('assets/stereo-3.png'),
+    love.graphics.newImage('assets/stereo-4.png'),
+  }
 end
 
 function Boost:update(dt, pawnList, mousePosX, mousePosY)
@@ -113,23 +119,6 @@ function Boost:place(moneyMeter)
   if moneyMeter.amount >= self.cost and not self.hasBeenPlaced then
     moneyMeter.amount = moneyMeter.amount - self.cost
     self.hasBeenPlaced = true
-
-    -- TODO move into BalloonBoost derived method
-    local balloonBrightnessFactor = 0.5
-    for i = 1, #Boost.balloonSprites do
-      local balloonImage = Boost.balloonSprites[i]
-      local spacingFactor = i / #Boost.balloonSprites -- keeps an even distribution
-      local distanceFromCenter = self.radius * spacingFactor
-      local degreeFromZero = (2 * math.pi) * spacingFactor
-      local x = self.position.x + math.cos(degreeFromZero) * distanceFromCenter
-      local y = self.position.y + math.sin(degreeFromZero) * distanceFromCenter
-      local color = {
-        math.random() * (1 - balloonBrightnessFactor) + balloonBrightnessFactor,
-        math.random() * (1 - balloonBrightnessFactor) + balloonBrightnessFactor,
-        math.random() * (1 - balloonBrightnessFactor) + balloonBrightnessFactor,
-      }
-      table.insert(self.balloons, {image = balloonImage, x = x, y = y, dy = 0, floatRate = math.random() * 0.1, color = color})
-    end
   elseif moneyMeter.amount < self.cost then
     self.showNotEnough = true
     self.timeSinceShownNotEnough = 0
@@ -160,6 +149,14 @@ local PizzaBoost = Boost:new({
     radius = 60,
   })
 
+local StereoBoost = Boost:new({
+    boostEnthusiasmRate = 1,
+    color = {0.2, 0.2, 0.2, 0.2},
+    cost = 100,
+    lifetime = 5,
+    radius = 200,
+  })
+
 function BalloonBoost:draw(money, mousePosX, mousePosY)
   boostRef.draw(self, money, mousePosX, mousePosY) -- for some reason can't just call Boost.draw(self)
   if self.hasBeenPlaced then
@@ -173,11 +170,44 @@ function BalloonBoost:draw(money, mousePosX, mousePosY)
   end
 end
 
+function BalloonBoost:place(moneyMeter)
+  if moneyMeter.amount >= self.cost and not self.hasBeenPlaced then
+    for i = 1, #Boost.balloonSprites do
+      local balloonImage = Boost.balloonSprites[i]
+      local spacingFactor = i / #Boost.balloonSprites -- keeps an even distribution
+
+      local distanceFromCenter = self.radius * spacingFactor * math.random()
+      local degreeFromZero = (2 * math.pi) * spacingFactor * math.random()
+      local x = self.position.x + math.cos(degreeFromZero) * distanceFromCenter
+      local y = self.position.y + math.sin(degreeFromZero) * distanceFromCenter
+
+      table.insert(self.balloons, {
+          image = balloonImage,
+          x = x,
+          y = y,
+          dy = 0,
+          floatRate = math.random() * 0.1
+        })
+    end
+  end
+  boostRef.place(self, moneyMeter)
+end
+
+function StereoBoost:draw(money, mousePosX, mousePosY)
+  boostRef.draw(self, money, mousePosX, mousePosY) -- for some reason can't just call Boost.draw(self)
+  if self.hasBeenPlaced then
+    local i = math.ceil(self.timeSincePlaced * 10) % 4 + 1
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.draw(Boost.stereoSprites[i], self.position.x, self.position.y)
+  end
+end
+
 return {
   BoostLoad = BoostLoad,
   boostList = {
     FriendBoost,
     PizzaBoost,
     BalloonBoost,
+    StereoBoost,
   }
 }

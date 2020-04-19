@@ -18,16 +18,31 @@ local lastTime = nil
 local pawnList = {}
 
 local boostList = Boost.boostList
-local selectedBoost = nil
+local selectedBoostNum = 1
 local boostSelectionMenu = nil
 
 local lose = false
 
+local cursorList = {}
+
+local floor
+
+local furniture = {}
+
 function love.load()
   math.randomseed(os.time())
   if arg[#arg] == "-debug" then require("mobdebug").start() end -- Enables debugging in ZeroBrane
+
+--  local balloonCursor = love.mouse.newCursor('assets/balloon-cursor.png', 20, 20)
+--  local pizzaCursor = love.mouse.newCursor('assets/pizza-cursor.png', 16, 16)
+--  local stereoCursor = love.mouse.newCursor('assets/music-note.png', 24, 24)
+--  cursorList = {nil, pizzaCursor, balloonCursor, stereoCursor}
   
+  floor = love.graphics.newImage('assets/floor.png')
   Boost.BoostLoad()
+  local couch = love.graphics.newImage('assets/couch.png')
+  
+  table.insert(furniture, {x = 200, y = 110, scale = 4, image = couch})
 
   table.insert(pawnList, Pawn:new({position = vector(230, 200), isActive = true, isInside = true}))
   table.insert(pawnList, Pawn:new({position = vector(400, 300), isActive = true, isInside = true}))
@@ -35,9 +50,7 @@ function love.load()
   moneyMeter = MoneyMeter:new()
   boostSelectionMenu = BoostSelectionMenu:new()
   
-
-  boostList[1].isSelected = true
-  selectedBoost = boostList[1]
+  boostList[selectedBoostNum].isSelected = true
   regularFont = love.graphics.getFont()
   bigFont = love.graphics.newFont(Constants.bigFontSize)
 end
@@ -85,10 +98,15 @@ function love.update(dt)
 end
 
 function love.draw()
+  love.graphics.setColor(1, 1, 1)
+  love.graphics.draw(floor, Constants.room[1], Constants.room[2])
+  for _, item in pairs(furniture) do
+    love.graphics.draw(item.image, item.x, item.y, 0, item.scale, item.scale)
+  end
+
+  if cursorList[selectedBoostNum] then love.mouse.setCursor(cursorList[selectedBoostNum]) end
+
   local mousePosX, mousePosY = love.mouse.getPosition()
-  -- Draw Constants.room
-  love.graphics.setColor(0.5, 0.5, 0.5)
-  love.graphics.rectangle('fill', Constants.room[1], Constants.room[2], Constants.room[3] - Constants.room[1], Constants.room[4] - Constants.room[2])
   
   for _, boost in pairs(boostList) do
     boost:draw(moneyMeter.amount, mousePosX, mousePosY)
@@ -124,17 +142,17 @@ end
 
 function love.mousepressed(x, y, button)
   if not lose and button == 1 then
-    selectedBoost:place(moneyMeter)
+    boostList[selectedBoostNum]:place(moneyMeter)
   end
 end
 
 function love.keypressed(key)
-  local selectedBoostType = boostList[tonumber(key)]
+  local selectedBoostInput = tonumber(key)
 
-  if selectedBoostType then
-    selectedBoost = selectedBoostType
-    for _, boost in pairs(boostList) do
-      boost.isSelected = (boost == selectedBoostType)
+  if selectedBoostInput and (selectedBoostInput > 0 and selectedBoostInput <= #boostList) then
+    selectedBoostNum = selectedBoostInput
+    for i, boost in pairs(boostList) do
+      boost.isSelected = (i == selectedBoostInput)
     end
   end
 end
