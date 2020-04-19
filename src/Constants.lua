@@ -11,6 +11,7 @@ Constants ={
   defaultBoostEnthusiasmRate = 1,
   defaultBoostLifetime = 1, -- seconds
   startingCash = 50,
+  gameDuration = 90,
   
   room = {100, 120, 700, 500},
   door = vector(300, 480),

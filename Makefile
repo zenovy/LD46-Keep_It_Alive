@@ -1,5 +1,5 @@
 MEMORY?=64000000 # 8MB by default
-TITLE?=Untitled
+TITLE?="Keep The Party Alive!"
 
 clean:
 	rm -rf dist

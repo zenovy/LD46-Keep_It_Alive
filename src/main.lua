@@ -80,6 +80,7 @@ function love.update(dt)
   if not game.isActive or game.isLose then return end
   GameData.timeLeft = GameData.timeLeft - dt
   if GameData.timeLeft <= 0 then
+    GameData.timeLeft = 0
     game.isLose = true
     return
   end

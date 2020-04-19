@@ -1,5 +1,7 @@
+local Constants = require "Constants"
+
 GameData = {
-  timeLeft = 120
+  timeLeft = Constants.gameDuration
 }
 
 return GameData
