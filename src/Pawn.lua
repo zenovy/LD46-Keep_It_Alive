@@ -4,7 +4,6 @@ Constants = require "Constants"
 UtilFuncs = require "UtilFuncs"
 
 local PAWN_SPAWN = vector(300, 550)
-local DOOR = vector(300, 480)
 
 Pawn = {
   position = PAWN_SPAWN:clone(),
@@ -38,9 +37,9 @@ function Pawn:update(dt)
     self.position = self.position + Constants.walkSpeed * direction:normalized() 
     if self.targetPosition:dist2(self.position) < 1 then self.isActive = true end
   else
-    local direction = DOOR - self.position
+    local direction = Constants.door - self.position
     self.position = self.position + Constants.walkSpeed * direction:normalized()
-    if DOOR:dist2(self.position) < 1 then self.isInside = true end
+    if Constants.door:dist2(self.position) < 1 then self.isInside = true end
   end
 end
 

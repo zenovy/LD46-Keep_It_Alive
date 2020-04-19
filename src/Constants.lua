@@ -1,3 +1,5 @@
+local vector = require "lib/vector"
+
 Constants ={
   -- Balancing Constants
   cashPerNewPawn = 10,
@@ -11,6 +13,7 @@ Constants ={
   startingCash = 100,
   
   room = {100, 120, 700, 500},
+  door = vector(300, 480),
   LOSE_PERCENT = 0.1,
   bigFontSize = 40,
   walkSpeed = 0.5,

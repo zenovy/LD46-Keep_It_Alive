@@ -24,7 +24,7 @@ local lose = false
 local pawnList = {}
 local cursorList = {}
 local furniture = {}
-local floor
+local floor, door
 
 function love.load()
   math.randomseed(os.time())
@@ -32,6 +32,7 @@ function love.load()
 
   -- Load images assets
   floor = love.graphics.newImage('assets/floor.png')
+  door = love. graphics.newImage('assets/door.png')
   local couch = love.graphics.newImage('assets/couch.png')
   local carpet = love.graphics.newImage('assets/carpet.png')
 
@@ -53,7 +54,7 @@ function love.load()
   table.insert(pawnList, Pawn:new({position = vector(400, 300), isActive = true, isInside = true}))
 
   -- Background assets
-  table.insert(furniture, {x = 200, y = 160, scale = 4, image = couch})
+  table.insert(furniture, {x = 200, y = 130, scale = 4, image = couch})
   table.insert(furniture, {x = 350, y = 200, scale = 4, image = carpet})
 
   -- Initialize Subcomponents
@@ -130,6 +131,9 @@ function love.draw()
   for _, boost in pairs(boostList) do
     boost:draw(moneyMeter.amount, mousePosX, mousePosY)
   end
+  
+  love.graphics.setColor(1, 1, 1)
+  love.graphics.draw(door, Constants.door.x - 80, Constants.door.y - 40, 0, 2, 2)
   
   -- Draw UI
   enthusiasmMeter:draw()
