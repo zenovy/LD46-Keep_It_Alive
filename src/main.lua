@@ -38,6 +38,10 @@ function love.load()
 --  local stereoCursor = love.mouse.newCursor('assets/music-note.png', 24, 24)
 --  cursorList = {nil, pizzaCursor, balloonCursor, stereoCursor}
   
+  regularFont = love.graphics.getFont()
+  feedbackFont = love.graphics.newFont(Constants.feedbackFontSize)
+  bigFont = love.graphics.newFont(Constants.bigFontSize)
+
   floor = love.graphics.newImage('assets/floor.png')
   Boost.BoostLoad()
   local couch = love.graphics.newImage('assets/couch.png')
@@ -53,9 +57,6 @@ function love.load()
   boostSelectionMenu = BoostSelectionMenu:new()
   
   boostList[selectedBoostNum].isSelected = true
-  regularFont = love.graphics.getFont()
-  feedbackFont = love.graphics.newFont(Constants.feedbackFontSize)
-  bigFont = love.graphics.newFont(Constants.bigFontSize)
 end
 
 function love.update(dt)
@@ -153,6 +154,7 @@ function love.keypressed(key)
   local selectedBoostInput = tonumber(key)
 
   if selectedBoostInput and (selectedBoostInput > 0 and selectedBoostInput <= #boostList) then
+    boostSelectionMenu.selectedItem = selectedBoostInput
     selectedBoostNum = selectedBoostInput
     for i, boost in pairs(boostList) do
       boost.isSelected = (i == selectedBoostInput)
