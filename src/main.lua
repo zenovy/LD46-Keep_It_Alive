@@ -62,8 +62,8 @@ function love.load()
   Boost.BoostLoad()
 
   -- Initial pawns
-  table.insert(pawnList, Pawn:new({position = vector(230, 200), isActive = true, isInside = true}))
-  table.insert(pawnList, Pawn:new({position = vector(400, 300), isActive = true, isInside = true}))
+  table.insert(pawnList, Pawn:new({position = vector(230, 200), isActive = true, isInside = true, color = UtilFuncs.randomColor()}))
+  table.insert(pawnList, Pawn:new({position = vector(400, 300), isActive = true, isInside = true, color = UtilFuncs.randomColor()}))
 
   -- Background assets
   table.insert(furniture, {x = 200, y = 130, scale = 4, image = couch})
@@ -108,7 +108,7 @@ function love.update(dt)
   pawnSpawnMeter = pawnSpawnMeter + Constants.newPawnFactor * enthusiasmMeter.percentFilled * dt
   if pawnSpawnMeter >= 1 and math.random() < 0.8 then -- add in a bit of randomness
       local x, y = math.random(Constants.room[1], Constants.room[3]), math.random(Constants.room[2], Constants.room[4])
-      table.insert(pawnList, Pawn:new({targetPosition = vector(x, y)}))
+      table.insert(pawnList, Pawn:new({targetPosition = vector(x, y), color = UtilFuncs.randomColor()}))
       moneyMeter.amount = moneyMeter.amount + Constants.cashPerNewPawn
     pawnSpawnMeter = 0
   end

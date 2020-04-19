@@ -13,6 +13,7 @@ Pawn = {
   isActive = false,
   isInside = false,
   isMoving = false,
+  color = {0.5, 0.5, 0.5}
 }
 
 function Pawn:new(o)
@@ -54,7 +55,7 @@ end
 
 function Pawn:draw()
   -- BODY
-  love.graphics.setColor(0.8, 0.8, 0)
+  love.graphics.setColor(self.color)
   love.graphics.ellipse('fill', self.position.x, self.position.y + self.size * 1, self.size * 0.75, self.size * 2)
    -- Body outline so that pawns on top of eachother look good
   love.graphics.setColor(0, 0, 0)
