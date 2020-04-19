@@ -41,8 +41,10 @@ function love.load()
   floor = love.graphics.newImage('assets/floor.png')
   Boost.BoostLoad()
   local couch = love.graphics.newImage('assets/couch.png')
+  local carpet = love.graphics.newImage('assets/carpet.png')
   
   table.insert(furniture, {x = 200, y = 110, scale = 4, image = couch})
+  table.insert(furniture, {x = 350, y = 200, scale = 4, image = carpet})
 
   table.insert(pawnList, Pawn:new({position = vector(230, 200), isActive = true, isInside = true}))
   table.insert(pawnList, Pawn:new({position = vector(400, 300), isActive = true, isInside = true}))
@@ -52,6 +54,7 @@ function love.load()
   
   boostList[selectedBoostNum].isSelected = true
   regularFont = love.graphics.getFont()
+  feedbackFont = love.graphics.newFont(Constants.feedbackFontSize)
   bigFont = love.graphics.newFont(Constants.bigFontSize)
 end
 
@@ -108,10 +111,6 @@ function love.draw()
 
   local mousePosX, mousePosY = love.mouse.getPosition()
   
-  for _, boost in pairs(boostList) do
-    boost:draw(moneyMeter.amount, mousePosX, mousePosY)
-  end
-  
   -- Draw Pawns
   for _, pawn in pairs(pawnList) do
     pawn:draw()
@@ -120,6 +119,10 @@ function love.draw()
   -- Draw Pawns' Enthusiasm Bars
   for _, pawn in pairs(pawnList) do
     pawn:drawEnthusiasmBar()
+  end
+  
+  for _, boost in pairs(boostList) do
+    boost:draw(moneyMeter.amount, mousePosX, mousePosY)
   end
   
   -- Draw UI

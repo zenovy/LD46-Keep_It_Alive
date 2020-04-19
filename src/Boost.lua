@@ -24,6 +24,8 @@ function Boost:new(o)
   setmetatable(o, self)
   self.__index = self
   o.position = vector:new()
+  regularFont = love.graphics.getFont()
+  feedbackFont = love.graphics.newFont(Constants.feedbackFontSize)
   return o
 end
 
@@ -92,25 +94,35 @@ function Boost:draw(money, mousePosX, mousePosY)
   local lineType = 'fill'
   if self.timeSincePlaced > 0 then
     -- Pulse the placed boosts
-    local pulseFactor = math.sin(self.timeSincePlaced * 10) * 0.2
+    local pulseFactor = math.sin(self.timeSincePlaced * 10) * 0.1
     love.graphics.setColor(self.color[1] + pulseFactor, self.color[2] + pulseFactor, self.color[3] + pulseFactor, 0.5)
   else
     lineType = (self.cost > money and 'line') or lineType
     
-    love.graphics.setColor(self.color[1], self.color[2], self.color[3], 0.8)
+    love.graphics.setColor(self.color[1], self.color[2], self.color[3], 0.9)
   end
 
   love.graphics.circle(lineType, self.position.x, self.position.y, self.radius)
+  love.graphics.setColor(1, 1, 1)
+  if self.timeSincePlaced > 0 then
+    love.graphics.setFont(feedbackFont)
+    love.graphics.print(math.ceil(self.lifetime - self.timeSincePlaced), self.position.x - 5, self.position.y - 5)
+    love.graphics.setFont(regularFont)
+  end
 
   -- Show how much it cost
   if self.timeSincePlaced > 0 and self.timeSincePlaced < 1 and self.cost > 0 then
     love.graphics.setColor(1, 0, 0)
+    love.graphics.setFont(feedbackFont)
     love.graphics.print('-$' .. tostring(self.cost), self.position.x + self.radius / 3, self.position.y - self.radius / 3)
+    love.graphics.setFont(regularFont)
   end
 
   if not self.hasBeenPlaced and self.showNotEnough then
     love.graphics.setColor(1, 0, 0)
+    love.graphics.setFont(feedbackFont)
     love.graphics.print('Not enough $', mousePosX + self.radius / 3, mousePosY - self.radius / 3)
+    love.graphics.setFont(regularFont)
   end
 
 end
@@ -127,11 +139,19 @@ function Boost:place(moneyMeter)
 end
 
 local FriendBoost = Boost:new({
-    boostEnthusiasmRate = 0.2,
+    boostEnthusiasmRate = 1,
     color = {0, 1, 0},
     cost = 0,
     lifetime = 3,
     radius = 20,
+  })
+
+local PizzaBoost = Boost:new({
+    boostEnthusiasmRate = 1,
+    color = {0.2, 0, 0},
+    cost = 5,
+    lifetime = 5,
+    radius = 60,
   })
 
 local BalloonBoost = Boost:new({
@@ -141,18 +161,10 @@ local BalloonBoost = Boost:new({
     lifetime = 2,
   })
 
-local PizzaBoost = Boost:new({
-    boostEnthusiasmRate = 1,
-    color = {1, 0, 0},
-    cost = 5,
-    lifetime = 5,
-    radius = 60,
-  })
-
 local StereoBoost = Boost:new({
     boostEnthusiasmRate = 1,
     color = {0.2, 0.2, 0.2, 0.2},
-    cost = 100,
+    cost = 50,
     lifetime = 5,
     radius = 200,
   })

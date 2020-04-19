@@ -20,6 +20,8 @@ Constants ={
   -- Visuals
   basePawnSize = 12,
   pawnBarPadding = 5,
+  
+  feedbackFontSize = 20
 }
 
 return Constants
