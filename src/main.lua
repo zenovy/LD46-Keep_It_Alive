@@ -9,53 +9,58 @@ BoostSelectionMenu = require "BoostSelectionMenu"
 Constants = require "Constants"
 UtilFuncs = require "UtilFuncs"
 
+-- Debug variables
 local fps = 0
-
-local debugMode = true
-
-local lastTime = nil
-
-local pawnList = {}
+local debugMode = false
 
 local boostList = Boost.boostList
 local selectedBoostNum = 1
 local boostSelectionMenu = nil
 
+-- Game state variables
+local lastTime = nil
 local lose = false
 
+local pawnList = {}
 local cursorList = {}
-
-local floor
-
 local furniture = {}
+local floor
 
 function love.load()
   math.randomseed(os.time())
   if arg[#arg] == "-debug" then require("mobdebug").start() end -- Enables debugging in ZeroBrane
 
+  -- Load images assets
+  floor = love.graphics.newImage('assets/floor.png')
+  local couch = love.graphics.newImage('assets/couch.png')
+  local carpet = love.graphics.newImage('assets/carpet.png')
+
+  -- Cursors (not supported in love.js)
 --  local balloonCursor = love.mouse.newCursor('assets/balloon-cursor.png', 20, 20)
 --  local pizzaCursor = love.mouse.newCursor('assets/pizza-cursor.png', 16, 16)
 --  local stereoCursor = love.mouse.newCursor('assets/music-note.png', 24, 24)
 --  cursorList = {nil, pizzaCursor, balloonCursor, stereoCursor}
-  
+
+  -- Fonts
   regularFont = love.graphics.getFont()
   feedbackFont = love.graphics.newFont(Constants.feedbackFontSize)
   bigFont = love.graphics.newFont(Constants.bigFontSize)
 
-  floor = love.graphics.newImage('assets/floor.png')
   Boost.BoostLoad()
-  local couch = love.graphics.newImage('assets/couch.png')
-  local carpet = love.graphics.newImage('assets/carpet.png')
-  
+
+  -- Initial pawns
+  table.insert(pawnList, Pawn:new({position = vector(230, 200), isActive = true, isInside = true}))
+  table.insert(pawnList, Pawn:new({position = vector(400, 300), isActive = true, isInside = true}))
+
+  -- Background assets
   table.insert(furniture, {x = 200, y = 160, scale = 4, image = couch})
   table.insert(furniture, {x = 350, y = 200, scale = 4, image = carpet})
 
-  table.insert(pawnList, Pawn:new({position = vector(230, 200), isActive = true, isInside = true}))
-  table.insert(pawnList, Pawn:new({position = vector(400, 300), isActive = true, isInside = true}))
+  -- Initialize Subcomponents
   enthusiasmMeter = EnthusiasmMeter:new()
   moneyMeter = MoneyMeter:new()
   boostSelectionMenu = BoostSelectionMenu:new()
-  
+
   boostList[selectedBoostNum].isSelected = true
 end
 

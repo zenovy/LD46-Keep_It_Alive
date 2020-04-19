@@ -13,6 +13,7 @@ Pawn = {
   isActive = false,
   isInside = false,
 }
+
 function Pawn:new(o)
   o = o or {}
   setmetatable(o, self)
@@ -62,7 +63,7 @@ function Pawn:draw()
   
   if not self.isInside then
     love.graphics.setColor(0, 1, 0, 0.8)
-    love.graphics.print("+$10", self.position.x + 10, self.position.y)
+    love.graphics.print("+$" .. tostring(Constants.cashPerNewPawn), self.position.x + 10, self.position.y)
   end
 end
 

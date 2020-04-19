@@ -20,8 +20,41 @@ Constants ={
   -- Visuals
   basePawnSize = 12,
   pawnBarPadding = 5,
-  
-  feedbackFontSize = 20
+  feedbackFontSize = 20,
+
+  -- Boost Data
+  friendBoost = {
+    name = "Chat",
+    boostEnthusiasmRate = 0.5,
+    color = {0, 1, 0},
+    cost = 0,
+    lifetime = 2,
+    radius = 20,
+  },
+  pizzaBoost = {
+    name = "Pizza",
+    boostEnthusiasmRate = 0.2,
+    color = {0.8, 0, 0},
+    cost = 5,
+    lifetime = 10,
+    radius = 60,
+  },
+  balloonBoost = {
+    name = "Balloon",
+    boostEnthusiasmRate = 0.4,
+    color = {0, 1, 1},
+    cost = 10,
+    lifetime = 3,
+    radius = 120,
+  },
+  stereoBoost = {
+    name = "Stereo",
+    boostEnthusiasmRate = 0.5,
+    color = {0.5, 0.5, 0.5, 0.2},
+    cost = 50,
+    lifetime = 7,
+    radius = 200,
+  },
 }
 
 return Constants

@@ -1,11 +1,6 @@
 Constants = require "Constants"
 
-local BALLOON_RADIUS = 6
-local NUM_BALLOONS = 5
-
-local TIME_TO_SHOW_NOT_ENOUGH = 1
-
-local DEFAULT_COLOR = {1, 1, 1}
+local TIME_TO_SHOW_NOT_ENOUGH = 1 -- seconds until 'not enough $' text disappears
 
 Boost = {
   radius = Constants.defaultBoostRadius,
@@ -13,10 +8,10 @@ Boost = {
   cost = Constants.defaultBoostCost,
   hasBeenPlaced = false,
   timeSincePlaced = 0,
-  color = DEFAULT_COLOR,
   boostEnthusiasmRate = Constants.defaultBoostEnthusiasmRate,
   balloons = {},
 }
+
 local boostRef = Boost
 
 function Boost:new(o)
@@ -86,7 +81,7 @@ function Boost:draw(money, mousePosX, mousePosY)
 
   -- Draw outline if has already been placed OR not enough $
   if (self.hasBeenPlaced and self.isSelected) or (self.isSelected and self.cost > money) then
-    love.graphics.setColor(self.color[1], self.color[2], self.color[3])
+    love.graphics.setColor(self.color)
     love.graphics.setLineWidth(1)
     love.graphics.circle('line', mousePosX, mousePosY, self.radius)
   end
@@ -135,40 +130,12 @@ function Boost:place(moneyMeter)
     self.showNotEnough = true
     self.timeSinceShownNotEnough = 0
   end
-
 end
 
-local FriendBoost = Boost:new({
-    boostEnthusiasmRate = 1,
-    color = {0, 1, 0},
-    cost = 0,
-    lifetime = 2,
-    radius = 20,
-  })
-
-local PizzaBoost = Boost:new({
-    boostEnthusiasmRate = 0.5,
-    color = {0.8, 0, 0},
-    cost = 5,
-    lifetime = 5,
-    radius = 60,
-  })
-
-local BalloonBoost = Boost:new({
-    boostEnthusiasmRate = 1,
-    color = {0, 1, 1},
-    cost = 10,
-    lifetime = 2,
-    radius = 120,
-  })
-
-local StereoBoost = Boost:new({
-    boostEnthusiasmRate = 0.5,
-    color = {0.5, 0.5, 0.5, 0.2},
-    cost = 50,
-    lifetime = 5,
-    radius = 200,
-  })
+local FriendBoost = Boost:new(Constants.friendBoost)
+local PizzaBoost = Boost:new(Constants.pizzaBoost)
+local BalloonBoost = Boost:new(Constants.balloonBoost)
+local StereoBoost = Boost:new(Constants.stereoBoost)
 
 function BalloonBoost:draw(money, mousePosX, mousePosY)
   boostRef.draw(self, money, mousePosX, mousePosY) -- for some reason can't just call Boost.draw(self)
