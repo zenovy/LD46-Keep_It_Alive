@@ -152,6 +152,7 @@ end
 
 function BalloonBoost:place(moneyMeter)
   if moneyMeter.amount >= self.cost and not self.hasBeenPlaced then
+    self.balloons = {}
     for i = 1, #Boost.balloonSprites do
       local balloonImage = Boost.balloonSprites[i]
       local spacingFactor = i / #Boost.balloonSprites -- keeps an even distribution

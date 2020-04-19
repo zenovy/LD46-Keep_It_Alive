@@ -17,8 +17,8 @@ Constants ={
   LOSE_PERCENT = 0.1,
   bigFontSize = 40,
   walkSpeed = 0.5,
-  moveChance = 0.2,
-  moveDist = 10,
+  moveChance = 0.3, -- chance to move every second
+  moveDist = 30,
 
   -- Visuals
   basePawnSize = 12,

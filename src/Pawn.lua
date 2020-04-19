@@ -11,6 +11,7 @@ Pawn = {
   enthusiasm = Constants.initialEnthusiasm,
   isActive = false,
   isInside = false,
+  isMoving = false,
 }
 
 function Pawn:new(o)
@@ -23,14 +24,21 @@ end
 function Pawn:update(dt)
   if self.isActive then
     self.enthusiasm = math.max(0, self.enthusiasm - Constants.enthusiasmDecay * dt)
-    local rand = math.random()
-    if rand < Constants.moveChance * dt then
-      -- base direction off same random; don't bias due to condition
-      local direction = rand / Constants.moveChance / dt * 2 * math.pi
-      local moveVec = vector(math.sin(direction), math.cos(direction))
-      local moveVecActual = moveVec:normalized() * Constants.moveDist
-      local attemptPos = self.position + moveVecActual
-      self.position.x, self.position.y = UtilFuncs.clampToBounds(attemptPos.x, attemptPos.y, unpack(Constants.room))
+    if self.destination then
+      self.position = self.position + (self.destination - self.position):normalized() * Constants.walkSpeed
+      if self.position:dist2(self.destination) < 1 then
+        self.destination = nil
+      end
+    else
+      local rand = math.random()
+      if rand < Constants.moveChance * dt then
+        -- base direction off same random; don't bias due to condition
+        local direction = rand / Constants.moveChance / dt * 2 * math.pi
+        local moveVec = vector(math.sin(direction), math.cos(direction))
+        local moveVecActual = moveVec:normalized() * Constants.moveDist * math.random()
+        local attemptPos = self.position + moveVecActual
+        self.destination = vector(UtilFuncs.clampToBounds(attemptPos.x, attemptPos.y, unpack(Constants.room)))
+      end
     end
   elseif self.isInside then
     local direction = self.targetPosition - self.position
