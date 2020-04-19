@@ -7,7 +7,7 @@ local width = 100
 local padding = 5
 local height = 20
 
-EnthusiasmMeter = {}
+EnthusiasmMeter = {percentFilled = 0.5}
 function EnthusiasmMeter:new(o)
   o = o or {}
   setmetatable(o, self)

@@ -26,6 +26,10 @@ local cursorList = {}
 local furniture = {}
 local floor, door
 
+local game = {
+  hasStarted = false
+}
+
 function love.load()
   math.randomseed(os.time())
   if arg[#arg] == "-debug" then require("mobdebug").start() end -- Enables debugging in ZeroBrane
@@ -61,12 +65,10 @@ function love.load()
   enthusiasmMeter = EnthusiasmMeter:new()
   moneyMeter = MoneyMeter:new()
   boostSelectionMenu = BoostSelectionMenu:new()
-
-  boostList[selectedBoostNum].isSelected = true
 end
 
 function love.update(dt)
-  if lose then return end
+  if not game.hasStarted or lose then return end
 
   local enthusiasmSum = 0
   for _, pawn in pairs(pawnList) do
@@ -154,19 +156,26 @@ function love.draw()
 end
 
 function love.mousepressed(x, y, button)
-  if not lose and button == 1 then
+  if game.hasStarted and not lose and button == 1 then
     boostList[selectedBoostNum]:place(moneyMeter)
   end
 end
 
 function love.keypressed(key)
-  local selectedBoostInput = tonumber(key)
+  if key == 'space' and not game.hasStarted then
+    game.hasStarted = true
+    boostList[selectedBoostNum].isSelected = true
+  end
 
-  if selectedBoostInput and (selectedBoostInput > 0 and selectedBoostInput <= #boostList) then
-    boostSelectionMenu.selectedItem = selectedBoostInput
-    selectedBoostNum = selectedBoostInput
-    for i, boost in pairs(boostList) do
-      boost.isSelected = (i == selectedBoostInput)
+  if game.hasStarted then
+    local selectedBoostInput = tonumber(key)
+
+    if selectedBoostInput and (selectedBoostInput > 0 and selectedBoostInput <= #boostList) then
+      boostSelectionMenu.selectedItem = selectedBoostInput
+      selectedBoostNum = selectedBoostInput
+      for i, boost in pairs(boostList) do
+        boost.isSelected = (i == selectedBoostInput)
+      end
     end
   end
 end
