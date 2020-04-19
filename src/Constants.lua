@@ -10,7 +10,7 @@ Constants ={
   defaultBoostLifetime = 1, -- seconds
   startingCash = 100,
   
-  room = {100, 100, 700, 500},
+  room = {100, 120, 700, 500},
   LOSE_PERCENT = 0.1,
   bigFontSize = 40,
   walkSpeed = 0.5,

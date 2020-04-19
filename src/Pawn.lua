@@ -4,7 +4,7 @@ Constants = require "Constants"
 UtilFuncs = require "UtilFuncs"
 
 local PAWN_SPAWN = vector(300, 550)
-local DOOR = vector(300, 500)
+local DOOR = vector(300, 480)
 
 Pawn = {
   position = PAWN_SPAWN:clone(),

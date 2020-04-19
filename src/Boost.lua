@@ -103,10 +103,10 @@ function Boost:draw(money, mousePosX, mousePosY)
   end
 
   love.graphics.circle(lineType, self.position.x, self.position.y, self.radius)
-  love.graphics.setColor(1, 1, 1)
+  love.graphics.setColor(0, 0, 0)
   if self.timeSincePlaced > 0 then
     love.graphics.setFont(feedbackFont)
-    love.graphics.print(math.ceil(self.lifetime - self.timeSincePlaced), self.position.x - 5, self.position.y - 5)
+    love.graphics.print(math.ceil(self.lifetime - self.timeSincePlaced), self.position.x - 5, self.position.y - 10)
     love.graphics.setFont(regularFont)
   end
 
@@ -142,28 +142,29 @@ local FriendBoost = Boost:new({
     boostEnthusiasmRate = 1,
     color = {0, 1, 0},
     cost = 0,
-    lifetime = 3,
+    lifetime = 2,
     radius = 20,
   })
 
 local PizzaBoost = Boost:new({
-    boostEnthusiasmRate = 1,
-    color = {0.2, 0, 0},
+    boostEnthusiasmRate = 0.5,
+    color = {0.8, 0, 0},
     cost = 5,
     lifetime = 5,
     radius = 60,
   })
 
 local BalloonBoost = Boost:new({
-    boostEnthusiasmRate = 2,
+    boostEnthusiasmRate = 1,
     color = {0, 1, 1},
-    cost = 20,
+    cost = 10,
     lifetime = 2,
+    radius = 120,
   })
 
 local StereoBoost = Boost:new({
-    boostEnthusiasmRate = 1,
-    color = {0.2, 0.2, 0.2, 0.2},
+    boostEnthusiasmRate = 0.5,
+    color = {0.5, 0.5, 0.5, 0.2},
     cost = 50,
     lifetime = 5,
     radius = 200,

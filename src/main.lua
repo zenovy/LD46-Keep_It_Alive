@@ -47,7 +47,7 @@ function love.load()
   local couch = love.graphics.newImage('assets/couch.png')
   local carpet = love.graphics.newImage('assets/carpet.png')
   
-  table.insert(furniture, {x = 200, y = 110, scale = 4, image = couch})
+  table.insert(furniture, {x = 200, y = 160, scale = 4, image = couch})
   table.insert(furniture, {x = 350, y = 200, scale = 4, image = carpet})
 
   table.insert(pawnList, Pawn:new({position = vector(230, 200), isActive = true, isInside = true}))
