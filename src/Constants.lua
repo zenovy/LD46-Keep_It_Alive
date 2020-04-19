@@ -3,7 +3,7 @@ local vector = require "lib/vector"
 Constants ={
   -- Balancing Constants
   cashPerNewPawn = 10,
-  newPawnFactor = 0.3,
+  newPawnFactor = 0.5,
   initialEnthusiasm = 0.75,
   enthusiasmDecay = 0.04,
   defaultBoostCost = 20,

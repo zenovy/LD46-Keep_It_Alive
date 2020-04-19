@@ -75,6 +75,11 @@ end
 
 function love.update(dt)
   if not game.hasStarted or lose then return end
+  GameData.timeLeft = GameData.timeLeft - dt
+  if GameData.timeLeft <= 0 then
+    lose = true
+    return
+  end
 
   local enthusiasmSum = 0
   for _, pawn in pairs(pawnList) do
