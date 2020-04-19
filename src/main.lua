@@ -22,15 +22,18 @@ local boostSelectionMenu = nil
 
 -- Game state variables
 local lastTime = nil
-local lose = false
 
 local pawnList = {}
 local cursorList = {}
 local furniture = {}
 local floor, door
 
+local pawnSpawnMeter = 0
+
 local game = {
-  hasStarted = false
+  isActive = false,
+  isWin = false,
+  isLose = false,
 }
 
 function love.load()
@@ -74,10 +77,10 @@ function love.load()
 end
 
 function love.update(dt)
-  if not game.hasStarted or lose then return end
+  if not game.isActive or game.isLose then return end
   GameData.timeLeft = GameData.timeLeft - dt
   if GameData.timeLeft <= 0 then
-    lose = true
+    game.isLose = true
     return
   end
 
@@ -88,8 +91,9 @@ function love.update(dt)
   end
   enthusiasmSum = enthusiasmSum / #pawnList
   
-  if enthusiasmSum < Constants.LOSE_PERCENT then
-    lose = true
+  if enthusiasmSum <= 0 then
+    enthusiasmSum = 0
+    game.isLose = true
     return
   end
 
@@ -100,19 +104,12 @@ function love.update(dt)
     pawn:update(dt)
   end
 
-  if not lastTime then lastTime = love.timer.getTime() end
-  
-  -- TODO: These events are jittery (at most 1/sec), should feel more fluid, also should decouple pawn shuffling w/ new pawns
-  if (love.timer.getTime() - lastTime) > 1 then
-    -- Insert a new pawn (chance based on enthusiasm)
-    local rand = math.random()
-    if rand < enthusiasmMeter.percentFilled * Constants.newPawnFactor then
+  pawnSpawnMeter = pawnSpawnMeter + Constants.newPawnFactor * enthusiasmMeter.percentFilled * dt
+  if pawnSpawnMeter >= 1 and math.random() < 0.8 then -- add in a bit of randomness
       local x, y = math.random(Constants.room[1], Constants.room[3]), math.random(Constants.room[2], Constants.room[4])
       table.insert(pawnList, Pawn:new({targetPosition = vector(x, y)}))
       moneyMeter.amount = moneyMeter.amount + Constants.cashPerNewPawn
-    end
-
-    lastTime = nil
+    pawnSpawnMeter = 0
   end
 
   for i, boost in pairs(boostList) do
@@ -153,8 +150,8 @@ function love.draw()
   moneyMeter:draw(#pawnList)
   boostSelectionMenu:draw()
   
-  -- Draw Lose UI
-  if lose then
+  -- Draw game.isLose UI
+  if game.isLose then
     love.graphics.setFont(GameData.bigFont)
     love.graphics.print("YOU LOSE!", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
     love.graphics.setFont(GameData.regularFont)
@@ -165,24 +162,24 @@ function love.draw()
     love.graphics.print('FPS: ' .. tostring(fps))
   end
 
-  if not game.hasStarted then
+  if not game.isActive then
     startMenu.draw()
   end
 end
 
 function love.mousepressed(x, y, button)
-  if game.hasStarted and not lose and button == 1 then
+  if game.isActive and not game.isLose and button == 1 then
     boostList[selectedBoostNum]:place(moneyMeter)
   end
 end
 
 function love.keypressed(key)
-  if key == 'space' and not game.hasStarted then
-    game.hasStarted = true
+  if key == 'space' and not game.isActive then
+    game.isActive = true
     boostList[selectedBoostNum].isSelected = true
   end
 
-  if game.hasStarted then
+  if game.isActive then
     local selectedBoostInput = tonumber(key)
 
     if selectedBoostInput and (selectedBoostInput > 0 and selectedBoostInput <= #boostList) then

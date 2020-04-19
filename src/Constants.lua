@@ -14,7 +14,6 @@ Constants ={
   
   room = {100, 120, 700, 500},
   door = vector(300, 480),
-  LOSE_PERCENT = 0.1,
   bigFontSize = 40,
   walkSpeed = 0.5,
   moveChance = 0.3, -- chance to move every second
@@ -31,7 +30,7 @@ Constants ={
     boostEnthusiasmRate = 0.5,
     color = {0, 1, 0},
     cost = 0,
-    lifetime = 2,
+    lifetime = 3,
     radius = 20,
   },
   pizzaBoost = {
@@ -39,8 +38,8 @@ Constants ={
     boostEnthusiasmRate = 0.2,
     color = {0.8, 0, 0},
     cost = 5,
-    lifetime = 10,
-    radius = 60,
+    lifetime = 4,
+    radius = 70,
   },
   balloonBoost = {
     name = "Balloon",
